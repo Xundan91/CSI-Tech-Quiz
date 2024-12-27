@@ -1,44 +1,58 @@
 
+# Project Setup Guide
 
-# Project Setup Instructions
-
-### Prerequisites
-- Node.js
+## Prerequisites
+- Node.js (v20 or higher)
 - npm
-- PostgreSQL database url from NeonDB 
-https://console.neon.tech/
+- Database URL from [NeonDB](https://console.neon.tech/)
 
-### Backend Setup
+## Step-by-Step Setup
 
+### 1. Clone Repository
+```bash
+git clone https://github.com/your-username/your-repo.git
+```
 
-
-Clone the repository:
+### 2. Backend Configuration
 
 ```bash
-   git clone https://github.com/your-username/your-repo.git
-
-
-# Navigate to backend directory
+# Navigate to backend
 cd backend 
 
 # Install dependencies
 npm install
 
-# Run Prisma migrations
+# Configure environment
+cp .env.example .env
+```
 
-# setup .env.example => rename to .env then Copy the url of neon db and paste there 
+### 3. Database Setup
 
+1. Visit [NeonDB Console](https://console.neon.tech/)
+2. Create new project
+3. Copy connection string
+4. Update `.env`:
+```
+DATABASE_URL="your-neondb-connection-string"
+```
+
+### 4. Initialize Database
+
+```bash
+# Run migrations
 npx prisma migrate dev
+```
 
-# Start development server
+### 5. Start Server
+
+```bash
 npm run dev
 ```
-
-### Environment Variables
-Create `.env` file in backend directory:
-```
-DATABASE_URL="postgresql://username:password@localhost:5432/dbname"
-```
-
-### API Documentation
 Server runs at `http://localhost:3000`
+
+## Troubleshooting
+
+- Ensure NeonDB connection string is correctly formatted
+- Check if all migrations are applied
+- Verify Node.js version compatibility(node -v) must be 22 
+
