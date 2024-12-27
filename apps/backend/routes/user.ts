@@ -4,6 +4,8 @@ import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
 import { getAllUsers } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
+import { getCurrentUser } from "../controllers/userController";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -11,8 +13,12 @@ const router = Router();
 
 router.get("/getAllUsers", authenticate, getAllUsers);
 
+//get current user
+router.get("/profile",authenticate, getCurrentUser);
+
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
+  
   try {
     const hashedPassword = await hashPassword(password);
     const user = await prisma.user.create({
