@@ -12,12 +12,7 @@ interface SubmitButtonProps {
   answeredQuestions: number;
 }
 
-export function SubmitButton({ 
-  onSubmit, 
-  isDisabled, 
-  totalQuestions, 
-  answeredQuestions 
-}: SubmitButtonProps) {
+export function SubmitButton({ onSubmit, isDisabled, totalQuestions, answeredQuestions }: SubmitButtonProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}

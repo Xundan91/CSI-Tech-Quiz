@@ -2,22 +2,23 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-import { getAllUsers } from "../controllers/userController";
+import { getAllUsers,addQuestions,getCurrentUser } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
-import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
+// import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
 
 const prisma = new PrismaClient();
 const router = Router();
 
 
 router.get("/getAllUsers", authenticate, getAllUsers);
+// router.post("/addquestion", authenticate,addQuestions );
 
 //get current user
 router.get("/profile",authenticate, getCurrentUser);
 
 
-router.post('/submit-test',authenticate, submitTestController);
-router.get('/test-submissions', authenticate, getTestSubmission);
+// router.post('/submit-test',authenticate, submitTestController);
+// router.get('/test-submissions', authenticate, getTestSubmission);
 
 
 router.post("/signup", async (req, res) => {

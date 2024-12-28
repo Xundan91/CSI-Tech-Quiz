@@ -1,5 +1,6 @@
-'use client';
+"use client"
 
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,36 +44,24 @@ export default function StudentDashboard() {
           return;
         }
 
-        // Fetch user profile
-        const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
+        // Using Axios for API requests
+        const profileResponse = await axios.get('http://localhost:8080/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!profileResponse.ok) {
-          throw new Error('Failed to fetch user profile');
-        }
+        setUserData(profileResponse.data);
 
-        const profileData = await profileResponse.json();
-        setUserData(profileData);
-
-        // Fetch test submissions
-        const submissionsResponse = await fetch('http://localhost:8080/api/user/test-submissions', {
+        const submissionsResponse = await axios.get('http://localhost:8080/api/user/test-submissions', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (!submissionsResponse.ok) {
-          throw new Error('Failed to fetch test submissions');
-        }
-
-        const submissionsData = await submissionsResponse.json();
 
         setExamScores(
-          submissionsData.data.length > 0
-            ? submissionsData.data
+          submissionsResponse.data.data.length > 0
+            ? submissionsResponse.data.data
             : [
                 {
                   id: 0,

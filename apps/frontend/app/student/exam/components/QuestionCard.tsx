@@ -13,12 +13,7 @@ interface QuestionCardProps {
   onAnswerSelect: (questionId: number, answer: string) => void;
 }
 
-export function QuestionCard({ 
-  question, 
-  index, 
-  selectedAnswer, 
-  onAnswerSelect 
-}: QuestionCardProps) {
+export function QuestionCard({ question, index, selectedAnswer, onAnswerSelect }: QuestionCardProps) {
   return (
     <motion.div
       initial={{ x: -20, opacity: 0 }}

@@ -19,7 +19,7 @@ export default function Home() {
     
     try {
       // First try admin login
-      const adminResponse = await fetch('/api/admin/login', {
+      const adminResponse = await fetch('http://localhost:8080/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,9 +118,9 @@ export default function Home() {
             <div className="mt-4 text-sm text-muted-foreground text-center">
               Demo credentials:
               <div className="mt-1">
-                Admin: admin@example.com / admin
+                Admin: admincsi@example.com / admincsi
                 <br />
-                Student: user@example3.com / userpassword3
+                Student: usercsi@example.com / usercsi
               </div>
             </div>
           </CardContent>

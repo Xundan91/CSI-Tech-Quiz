@@ -17,7 +17,7 @@ export function useExam(questions: Question[]) {
 
   useEffect(() => {
     const completed = localStorage.getItem('examCompleted');
-    if (completed !== 'true') {
+    if (completed === 'true') {
       toast({
         title: "Exam Already Completed",
         description: "You cannot retake this exam.",
@@ -25,7 +25,7 @@ export function useExam(questions: Question[]) {
       });
       router.push('/student');
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     if (roundStarted && state.timeLeft > 0) {

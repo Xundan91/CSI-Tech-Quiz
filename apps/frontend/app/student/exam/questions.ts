@@ -61,3 +61,5 @@ export const examQuestions = [
     correctAnswer: "Nitrogen"
   }
 ];
+
+//fetch here questiom
