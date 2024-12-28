@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { log } from "node:console";
 
 const prisma = new PrismaClient();
 
@@ -47,3 +46,66 @@ export const getCurrentUser = async (req: any, res: any) => {
     res.status(500).json({ error: "Failed to fetch user data" });
   }
 };
+
+export const submitTestController = async (req:any, res:any) => {
+  try {
+    const { userId, questionsAttempted, correctAnswers } = req.body;
+
+    // Input validation
+    if (!userId || questionsAttempted === undefined || correctAnswers === undefined) {
+      return res.status(400).json({ message: 'All fields are required: userId, questionsAttempted, correctAnswers' });
+    }
+
+    // Calculate percentage
+    const percentage = (correctAnswers / questionsAttempted) * 100;
+
+    // Create a new test record in the database
+    const newTest = await prisma.testHistory.create({
+      data: {
+        userId,
+        questionsAttempted,
+        correctAnswers,
+        percentage,
+      },
+    });
+
+    res.status(201).json({ message: 'Test data submitted successfully', data: newTest });
+  } catch (error:any) {
+    console.error('Error submitting test data:', error);
+    res.status(500).json({ message: 'An error occurred while submitting test data', error: error.message });
+  }
+};
+
+
+
+export const getTestSubmission = async (req:any  ,res:any ) =>{
+
+  try {
+
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: 'User ID is required',
+      });
+    }
+
+    const testSubmissions = await prisma.testHistory.findMany({
+      where: { userId }, // Filter test history by userId
+    });
+
+    res.status(200).json({
+      message: 'User test submissions fetched successfully',
+      data: testSubmissions,
+    });
+
+    
+  } catch (error:any) {
+    console.error('Error fetching user test submissions:', error);
+    res.status(500).json({
+      message: 'Failed to fetch test submissions',
+      error: error.message,
+    });    
+  }
+
+}

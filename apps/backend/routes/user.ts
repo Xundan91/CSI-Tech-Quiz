@@ -4,8 +4,7 @@ import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
 import { getAllUsers } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
-import { getCurrentUser } from "../controllers/userController";
-import { log } from "console";
+import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -15,6 +14,11 @@ router.get("/getAllUsers", authenticate, getAllUsers);
 
 //get current user
 router.get("/profile",authenticate, getCurrentUser);
+
+
+router.post('/submit-test',authenticate, submitTestController);
+router.get('/test-submissions', authenticate, getTestSubmission);
+
 
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;

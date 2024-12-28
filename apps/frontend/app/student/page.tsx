@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { BookOpen, GraduationCap, PlayCircle } from 'lucide-react';
+import { PlayCircle, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +13,14 @@ interface UserData {
   name: string;
   email: string;
   course?: string;
+}
+
+interface ExamScore {
+  id: number;
+  questionsAttempted: number;
+  correctAnswers: number;
+  percentage: number;
+  testDate: string;
 }
 
 const rounds = [
@@ -23,6 +31,7 @@ const rounds = [
 
 export default function StudentDashboard() {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [examScores, setExamScores] = useState<ExamScore[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,27 +43,51 @@ export default function StudentDashboard() {
           return;
         }
 
-        const response = await fetch('http://localhost:8080/api/user/profile', {
+        // Fetch user profile
+        const profileResponse = await fetch('http://localhost:8080/api/user/profile', {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        console.log(response);
-        
-        console.log(token);
-        
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+        if (!profileResponse.ok) {
+          throw new Error('Failed to fetch user profile');
         }
 
-        const data = await response.json();
-        setUserData(data);
+        const profileData = await profileResponse.json();
+        setUserData(profileData);
+
+        // Fetch test submissions
+        const submissionsResponse = await fetch('http://localhost:8080/api/user/test-submissions', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!submissionsResponse.ok) {
+          throw new Error('Failed to fetch test submissions');
+        }
+
+        const submissionsData = await submissionsResponse.json();
+
+        setExamScores(
+          submissionsData.data.length > 0
+            ? submissionsData.data
+            : [
+                {
+                  id: 0,
+                  questionsAttempted: 0,
+                  correctAnswers: 0,
+                  percentage: 0,
+                  testDate: '',
+                },
+              ]
+        );
       } catch (error) {
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load user profile",
+          variant: 'destructive',
+          title: 'Error',
+          description: (error as Error).message,
         });
       }
     };
@@ -63,9 +96,11 @@ export default function StudentDashboard() {
   }, [toast]);
 
   if (!userData) {
-    return <div className="min-h-screen bg-background flex items-center justify-center">
-      Loading...
-    </div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -76,11 +111,8 @@ export default function StudentDashboard() {
         transition={{ duration: 0.5 }}
         className="max-w-4xl mx-auto space-y-8"
       >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
+        {/* Student Profile Card */}
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }}>
           <Card>
             <CardHeader>
               <CardTitle>Student Profile</CardTitle>
@@ -100,11 +132,8 @@ export default function StudentDashboard() {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
+        {/* Available Rounds Card */}
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.3 }}>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -128,17 +157,46 @@ export default function StudentDashboard() {
                       </div>
                       {round.status === 'Not Started' ? (
                         <Link href="/student/exam">
-                          <Button>
-                            Start Round
-                          </Button>
+                          <Button>Start Round</Button>
                         </Link>
                       ) : (
-                        <Button variant="outline" disabled>
-                          {round.status}
-                        </Button>
+                        <Button variant="outline" disabled>{round.status}</Button>
                       )}
                     </div>
                   </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Exam Scores Card */}
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.4 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Trophy className="mr-2" /> Exam Scores
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {examScores.map((score) => (
+                  <div key={score.id} className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors">
+                    <h3 className="font-medium">Test ID: {score.id}</h3>
+                    <div className="mt-2 space-y-1">
+                      <p className="text-lg font-semibold text-primary">
+                        Correct Answers: {score.correctAnswers}/{score.questionsAttempted}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Percentage: {score.percentage}%
+                      </p>
+                      {score.testDate && (
+                        <p className="text-sm text-muted-foreground">
+                          Date: {new Date(score.testDate).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </CardContent>

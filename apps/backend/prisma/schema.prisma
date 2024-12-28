@@ -20,7 +20,20 @@ model User {
   email    String   @unique
   password String
   createdAt DateTime @default(now())
+  testHistory TestHistory[]
+
 }
+
+model TestHistory {
+  id               Int       @id @default(autoincrement())
+  userId           Int
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionsAttempted Int
+  correctAnswers    Int
+  percentage        Float
+  testDate          DateTime @default(now())
+}
+
 
 model Admin {
   id       Int      @id @default(autoincrement())
