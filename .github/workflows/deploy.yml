@@ -1,37 +1,36 @@
-name : Deploy to Vercel
+name: Deploy Next.js to Vercel
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-             - 'apps/frontend/**'
-jobs :
-    deploy :
-        runs-on: ubuntu-latest
+  push:
+    branches:
+      - main  # Deploy on push to the main branch
+    paths:
+      - 'apps/frontend/**'  # Trigger only when changes happen in the frontend folder
 
-        steps:
-            - name : checkout code
-              uses: action/checkout@v3
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Corrected action name
 
-            - name: Setup Node.js
-              uses: action/setup-node@v3
-              with:
-                node-version : 22
-                cache : "npm"
-            
-            - name : Install dependencies
-              working-directory : apps/frontend
-              run : npm install
-            
-            - name : Build Project
-              working-directory : apps/frontend
-              run : npm run dev
+      - name: Setup Node.js
+        uses: actions/setup-node@v3  # Corrected action name
+        with:
+          node-version: 18  # Use the Node.js version your project requires
+          cache: 'npm'
 
-            - name : "Deploy to Vercel"
-              env :
-                VERCEL_TOKEN : ${{secrets.VERCEL_TOKEN}}
-              working-directory : apps/frontend
-              run : npx vercel --prod
+      - name: Install dependencies
+        working-directory: apps/frontend
+        run: npm install
 
+      - name: Build project
+        working-directory: apps/frontend
+        run: npm run build
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/frontend
+        run: npx vercel --prod
