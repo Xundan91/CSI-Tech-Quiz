@@ -3,9 +3,9 @@ name: Deploy Next.js to Vercel
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on pushes to the main branch
     paths:
-      - 'apps/frontend/**'
+      - 'apps/frontend/**'  # Only trigger when changes occur in the frontend folder
 
 jobs:
   deploy:
@@ -19,19 +19,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
-
-      - name: Ensure lock file exists
-        working-directory: apps/frontend
-        run: |
-          if [ ! -f package-lock.json ]; then
-            echo "Error: package-lock.json is missing."
-            exit 1
-          fi
+          cache: npm
 
       - name: Install dependencies
         working-directory: apps/frontend
-        run: npm ci
+        run: npm ci  # Use 'ci' for clean install based on package-lock.json
 
       - name: Build project
         working-directory: apps/frontend
