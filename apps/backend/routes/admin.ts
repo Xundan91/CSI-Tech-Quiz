@@ -2,13 +2,13 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-import { getAllAdmins } from "../controllers/adminController";
+// import { getAllAdmins } from "../controllers/adminController";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware";
 
 const prisma = new PrismaClient();
 const router = Router();
 
-router.get("/getalladmins", authenticate, authorizeAdmin, getAllAdmins);
+// router.get("/getalladmins", authenticate, authorizeAdmin, getAllAdmins);
 
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
