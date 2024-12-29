@@ -10,6 +10,7 @@ import { Timer, AlertCircle, Trophy, PartyPopper } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { examQuestions } from './questions';
 import { useRouter } from 'next/navigation';
+import axios from "axios"
 
 export default function ExamPage() {
   const [roundStarted, setRoundStarted] = useState(false);
