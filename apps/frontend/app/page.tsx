@@ -84,7 +84,7 @@ export default function Home() {
             >
               <UserCircle2 size={50} className="text-primary mb-2" />
             </motion.div>
-            <CardTitle className="text-2xl">Welcome back</CardTitle>
+            <CardTitle className="text-2xl">Welcome </CardTitle>
             <CardDescription>Enter your credentials to login</CardDescription>
           </CardHeader>
           <CardContent>
