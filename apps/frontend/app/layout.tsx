@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Student Management System',
-  description: 'Admin and Student Portal',
+  title: 'Techo-Pedia Csi Quiz Event',
+  description: 'Growth and New Learning',
 };
 
 export default function RootLayout({
