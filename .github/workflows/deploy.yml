@@ -3,9 +3,9 @@ name: Deploy Next.js to Vercel
 on:
   push:
     branches:
-      - main  # Deploy on push to the main branch
+      - main
     paths:
-      - 'apps/frontend/**'  # Trigger only when changes happen in the frontend folder
+      - 'apps/frontend/**'
 
 jobs:
   deploy:
@@ -13,24 +13,32 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Ensure the repository is checked out
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3  # Sets up Node.js environment
+        uses: actions/setup-node@v3
         with:
-          node-version: 18  # Use the Node.js version your project requires
-          cache: 'npm'      # Enable npm caching
+          node-version: 18
+          cache: 'npm'
+
+      - name: Ensure lock file exists
+        working-directory: apps/frontend
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "Error: package-lock.json is missing."
+            exit 1
+          fi
 
       - name: Install dependencies
-        working-directory: apps/frontend  # Navigate to the frontend directory
-        run: npm install
+        working-directory: apps/frontend
+        run: npm ci
 
       - name: Build project
-        working-directory: apps/frontend  # Navigate to the frontend directory
+        working-directory: apps/frontend
         run: npm run build
 
       - name: Deploy to Vercel
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Use the secret VERCEL_TOKEN for deployment
-        working-directory: apps/frontend  # Navigate to the frontend directory
-        run: npx vercel --prod  # Deploy to production
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/frontend
+        run: npx vercel --prod
