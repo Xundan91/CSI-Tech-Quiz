@@ -8,8 +8,8 @@ var bodyParser = require('body-parser')
 const app = express();
 
 app.use(express.json());
- 
-app.use(cors({ origin: 'http://localhost:3000' }));
+const allowedOrigins = ['http://localhost:3000', 'https://techo-pedia-csi.vercel.app'];
+app.use(cors({ origin: allowedOrigins }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
