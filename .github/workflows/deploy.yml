@@ -13,24 +13,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Corrected action name
+        uses: actions/checkout@v3  # Ensure the repository is checked out
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3  # Corrected action name
+        uses: actions/setup-node@v3  # Sets up Node.js environment
         with:
           node-version: 18  # Use the Node.js version your project requires
-          cache: 'npm'
+          cache: 'npm'      # Enable npm caching
 
       - name: Install dependencies
-        working-directory: apps/frontend
+        working-directory: apps/frontend  # Navigate to the frontend directory
         run: npm install
 
       - name: Build project
-        working-directory: apps/frontend
+        working-directory: apps/frontend  # Navigate to the frontend directory
         run: npm run build
 
       - name: Deploy to Vercel
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/frontend
-        run: npx vercel --prod
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Use the secret VERCEL_TOKEN for deployment
+        working-directory: apps/frontend  # Navigate to the frontend directory
+        run: npx vercel --prod  # Deploy to production
