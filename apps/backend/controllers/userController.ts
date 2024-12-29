@@ -3,50 +3,50 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const addQuestions = async (req: Request, res: Response) => {
-  try {
-    const { questions, testRoundId } = req.body;
+// export const addQuestions = async (req: Request, res: Response) => {
+//   try {
+//     const { questions, testRoundId } = req.body;
 
-    if (!Array.isArray(questions) || questions.length === 0 || !testRoundId) {
-      return res.status(400).json({ error: "Invalid input format" });
-    }
+//     if (!Array.isArray(questions) || questions.length === 0 || !testRoundId) {
+//       return res.status(400).json({ error: "Invalid input format" });
+//     }
 
-    // Prepare data with all required fields
-    const data = questions.map((q: any) => ({
-      testRoundId,
-      questionText: q.question,
-      correctAnswer: q.correctOption,
-      options: q.options,
-    }));
+//     // Prepare data with all required fields
+//     const data = questions.map((q: any) => ({
+//       testRoundId,
+//       questionText: q.question,
+//       correctAnswer: q.correctOption,
+//       options: q.options,
+//     }));
 
-    // Insert into the database
-    const createdQuestions = await prisma.question.createMany({
-      data,
-      skipDuplicates: true, // Avoid inserting duplicates if unique constraints exist
-    });
+//     // Insert into the database
+//     const createdQuestions = await prisma.question.createMany({
+//       data,
+//       skipDuplicates: true, // Avoid inserting duplicates if unique constraints exist
+//     });
 
-    res.status(201).json({
-      message: "Questions added successfully",
-      createdCount: createdQuestions.count,
-    });
-  } catch (error) {
-    console.error("Error adding questions:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-
+//     res.status(201).json({
+//       message: "Questions added successfully",
+//       createdCount: createdQuestions.count,
+//     });
+//   } catch (error) {
+//     console.error("Error adding questions:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
 
 
-export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await prisma.user.findMany();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch users", details: err });
-  }
-};
+
+
+// export const getAllUsers = async (req: Request, res: Response) => {
+//   try {
+//     const users = await prisma.user.findMany();
+//     res.json(users);
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to fetch users", details: err });
+//   }
+// };
 
 export const getCurrentUser = async (req: any, res: any) => {
   try {

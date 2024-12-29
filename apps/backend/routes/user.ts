@@ -2,7 +2,8 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-import { getAllUsers,addQuestions,getCurrentUser } from "../controllers/userController";
+// import { getAllUsers,addQuestions, } from "../controllers/userController";
+import { getCurrentUser } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
 // import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
 
@@ -10,7 +11,7 @@ const prisma = new PrismaClient();
 const router = Router();
 
 
-router.get("/getAllUsers", authenticate, getAllUsers);
+// router.get("/getAllUsers", authenticate, getAllUsers);
 // router.post("/addquestion", authenticate,addQuestions );
 
 //get current user
