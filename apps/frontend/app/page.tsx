@@ -19,7 +19,7 @@ export default function Home() {
     
     try {
       // First try admin login
-      const adminResponse = await fetch('http://localhost:8080/api/admin/login', {
+      const adminResponse = await fetch('https://csi-tech-quiz.onrender.com/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export default function Home() {
       }
 
       // If admin login fails, try user login
-      const userResponse = await fetch('http://localhost:8080/api/user/login', {
+      const userResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

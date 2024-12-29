@@ -45,7 +45,7 @@ export default function StudentDashboard() {
         }
 
         // Using Axios for API requests
-        const profileResponse = await axios.get('http://localhost:8080/api/user/profile', {
+        const profileResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -53,14 +53,14 @@ export default function StudentDashboard() {
 
         setUserData(profileResponse.data);
 
-        const submissionsResponse = await axios.get('http://localhost:8080/api/user/test-submissions', {
+        const submissionsResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/test-submissions', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         setExamScores(
-          submissionsResponse.data.data.length > 0
+          submissionsResponse.data.data.length > 0 || submissionsResponse.data.data === false
             ? submissionsResponse.data.data
             : [
                 {
@@ -73,11 +73,25 @@ export default function StudentDashboard() {
               ]
         );
       } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: (error as Error).message,
-        });
+
+        setExamScores(
+         [
+                {
+                  id: 0,
+                  questionsAttempted: 0,
+                  correctAnswers: 0,
+                  percentage: 0,
+                  testDate: '',
+                },
+              ]
+        );
+
+      //its will get change
+        // toast({
+        //   variant: 'destructive',
+        //   title: 'Error',
+        //   description: (error as Error).message,
+        // });
       }
     };
 
