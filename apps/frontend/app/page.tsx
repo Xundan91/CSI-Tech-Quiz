@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { LockKeyhole, UserCircle2 } from 'lucide-react';
 import { LoadingButton } from '@/components/ui/loading-button';
 
+
 export default function Home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +21,7 @@ export default function Home() {
     
     try {
       // First try admin login
-      const adminResponse = await fetch('https://techo-pedia-csi.vercel.app/api/admin/login', {
+      const adminResponse = await fetch('https://csi-tech-quiz.onrender.com/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export default function Home() {
       }
 
       // If admin login fails, try user login
-      const userResponse = await fetch('https://techo-pedia-csi.vercel.app/api/user/login', {
+      const userResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

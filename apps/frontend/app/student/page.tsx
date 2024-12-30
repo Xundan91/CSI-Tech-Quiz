@@ -48,7 +48,7 @@ export default function StudentDashboard() {
         }
 
         // Using Axios for API requests
-        const profileResponse = await axios.get('https://techo-pedia-csi.vercel.app/api/user/profile', {
+        const profileResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,7 +56,7 @@ export default function StudentDashboard() {
 
         setUserData(profileResponse.data);
 
-        const submissionsResponse = await axios.get('https://techo-pedia-csi.vercel.app/api/user/test-submissions', {
+        const submissionsResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/test-submissions', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
