@@ -12,23 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: npm
 
+      # Step 3: Ensure lock file exists
+      - name: Verify package-lock.json exists
+        run: |
+          if [ ! -f "apps/frontend/package-lock.json" ]; then
+            echo "Error: package-lock.json not found in apps/frontend"
+            exit 1
+          fi
+
+      # Step 4: Install dependencies
       - name: Install dependencies
         working-directory: apps/frontend
-        run: npm ci  # Use 'ci' for clean install based on package-lock.json
+        run: npm ci
 
+      # Step 5: Build the project
       - name: Build project
         working-directory: apps/frontend
         run: npm run build
 
+      # Step 6: Deploy to Vercel
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
