@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { LockKeyhole, UserCircle2 } from 'lucide-react';
+import { LoadingButton } from '@/components/ui/loading-button';
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ export default function Home() {
     
     try {
       // First try admin login
-      const adminResponse = await fetch('https://csi-tech-quiz.onrender.com/api/admin/login', {
+      const adminResponse = await fetch('https://techo-pedia-csi.vercel.app/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ export default function Home() {
       }
 
       // If admin login fails, try user login
-      const userResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/login', {
+      const userResponse = await fetch('https://techo-pedia-csi.vercel.app/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,9 +111,9 @@ export default function Home() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <LoadingButton type="submit" className="w-full">
                 <LockKeyhole className="mr-2 h-4 w-4" /> Login
-              </Button>
+              </LoadingButton>
             </form>
             
             <div className="mt-4 text-sm text-muted-foreground text-center">

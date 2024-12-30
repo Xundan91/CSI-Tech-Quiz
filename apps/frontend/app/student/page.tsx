@@ -10,6 +10,9 @@ import { PlayCircle, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 
+import { LoadingButton } from '@/components/ui/loading-button';
+import { CodeBattleLoader } from '@/components/ui/code-battle-loader';
+
 interface UserData {
   name: string;
   email: string;
@@ -45,7 +48,7 @@ export default function StudentDashboard() {
         }
 
         // Using Axios for API requests
-        const profileResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
+        const profileResponse = await axios.get('https://techo-pedia-csi.vercel.app/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -53,7 +56,7 @@ export default function StudentDashboard() {
 
         setUserData(profileResponse.data);
 
-        const submissionsResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/test-submissions', {
+        const submissionsResponse = await axios.get('https://techo-pedia-csi.vercel.app/api/user/test-submissions', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -100,9 +103,7 @@ export default function StudentDashboard() {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        Loading...
-      </div>
+      <CodeBattleLoader />
     );
   }
 
@@ -160,7 +161,10 @@ export default function StudentDashboard() {
                       </div>
                       {round.status === 'Not Started' ? (
                         <Link href="/student/exam">
+                          <LoadingButton>
+
                           <Button>Start Round</Button>
+                          </LoadingButton>
                         </Link>
                       ) : (
                         <Button variant="outline" disabled>{round.status}</Button>

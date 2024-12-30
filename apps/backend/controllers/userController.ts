@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const a = 11
+
 // export const addQuestions = async (req: Request, res: Response) => {
 //   try {
 //     const { questions, testRoundId } = req.body;
