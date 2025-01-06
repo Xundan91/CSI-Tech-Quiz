@@ -52,7 +52,8 @@ model Question {
   roundType        RoundType
   questionText     String
   options       String[] 
-  userAnswer       String?   // Optional, stores user's answer
+  userAnswer       String? 
+  correctAnswer String    
 }
 
 enum RoundType {
