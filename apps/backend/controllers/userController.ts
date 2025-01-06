@@ -1,52 +1,32 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// export const addQuestions = async (req: Request, res: Response) => {
-//   try {
-//     const { questions, testRoundId } = req.body;
 
-//     if (!Array.isArray(questions) || questions.length === 0 || !testRoundId) {
-//       return res.status(400).json({ error: "Invalid input format" });
-//     }
+export const getAllQuestionsWithOptions = async (req: any, res: any) => {
+  try {
+    const questions = await prisma.question.findMany({
+      select: {
+        id: true,
+        questionText: true,
+        options: true,
+        correctAnswer: true,
+      },
+    });
 
-//     // Prepare data with all required fields
-//     const data = questions.map((q: any) => ({
-//       testRoundId,
-//       questionText: q.question,
-//       correctAnswer: q.correctOption,
-//       options: q.options,
-//     }));
-
-//     // Insert into the database
-//     const createdQuestions = await prisma.question.createMany({
-//       data,
-//       skipDuplicates: true, // Avoid inserting duplicates if unique constraints exist
-//     });
-
-//     res.status(201).json({
-//       message: "Questions added successfully",
-//       createdCount: createdQuestions.count,
-//     });
-//   } catch (error) {
-//     console.error("Error adding questions:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
-
-
-
-
-// export const getAllUsers = async (req: Request, res: Response) => {
-//   try {
-//     const users = await prisma.user.findMany();
-//     res.json(users);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch users", details: err });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      data: questions,
+    });
+  } catch (error) {
+    console.error("Error fetching questions with options:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
 
 export const getCurrentUser = async (req: any, res: any) => {
   try {

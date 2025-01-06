@@ -3,18 +3,26 @@ import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
 // import { getAllUsers,addQuestions, } from "../controllers/userController";
-import { getCurrentUser } from "../controllers/userController";
+import { getCurrentUser,getAllQuestionsWithOptions } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
 // import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
+import {submitTestController,getTestSubmission,getCurrentRound,} from "../controllers/examController";
 
 const prisma = new PrismaClient();
 const router = Router();
 
+//exam question get and post
 
-// router.get("/getAllUsers", authenticate, getAllUsers);
-// router.post("/addquestion", authenticate,addQuestions );
+router.get("/getallquestions",authenticate,getAllQuestionsWithOptions)
 
-//get current user
+// Exam routes
+router.post("/submit-test", authenticate, submitTestController);
+router.get("/test-submissions", authenticate, getTestSubmission);
+router.get("/current-round", authenticate, getCurrentRound);
+
+
+
+
 router.get("/profile",authenticate, getCurrentUser);
 
 
