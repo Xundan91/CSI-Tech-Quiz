@@ -19,47 +19,24 @@ model User {
   email     String    @unique
   password  String
   createdAt DateTime  @default(now())
-  testHistories TestHistory[]
+  rounds     testRound[]
 }
 
-model TestHistory {
-  id               Int               @id @default(autoincrement())
-  userId           Int
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionsAttempted Int
-  totalcorrectAnswers    Int
+model testRound {
+  id                Int      @id @default(autoincrement())
+  userid            Int
+  TestType          TestType
+  questionattempted Int
+  correctAnswer     Int
   percentage        Float
-  testDate          DateTime         @default(now())
-  rounds           TestRound[]
+  roundDate         DateTime @default(now())
+  User              User     @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
 
-model TestRound{
-  id               Int               @id @default(autoincrement())
-  testHistoryId    Int
-  testHistory      TestHistory       @relation(fields: [testHistoryId], references: [id], onDelete: Cascade)
-  roundType        RoundType
-  questionsAttempted Int
-  correctAnswers    Int
-  percentage        Float
-  roundDate        DateTime          @default(now())
-  questions        Question[]
-}
-
-model Question {
-  id               Int       @id @default(autoincrement())
-  testRoundId      Int
-  testRound        TestRound @relation(fields: [testRoundId], references: [id], onDelete: Cascade)
-  roundType        RoundType
-  questionText     String
-  options       String[] 
-  userAnswer       String? 
-  correctAnswer String    
-}
-
-enum RoundType {
+enum TestType {
   APTITUDE
-  DSA_BASIC
-  DSA_ADVANCED
+  DSA
+  ADVANCEDSA
 }
 
 
