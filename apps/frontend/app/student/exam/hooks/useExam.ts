@@ -62,6 +62,8 @@ export function useExam(questions: Question[]) {
     localStorage.setItem('examCompleted', 'true');
     setState(prev => ({ ...prev, isCompleted: true }));
 
+    
+
     toast({
       title: "Exam Submitted!",
       description: `You scored ${score} out of ${questions.length}`,

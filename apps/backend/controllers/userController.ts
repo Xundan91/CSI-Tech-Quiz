@@ -4,30 +4,6 @@ import { PrismaClient, Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 
 
-export const getAllQuestionsWithOptions = async (req: any, res: any) => {
-  try {
-    const questions = await prisma.question.findMany({
-      select: {
-        id: true,
-        questionText: true,
-        options: true,
-        correctAnswer: true,
-      },
-    });
-
-    return res.status(200).json({
-      success: true,
-      data: questions,
-    });
-  } catch (error) {
-    console.error("Error fetching questions with options:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error.",
-    });
-  }
-};
-
 export const getCurrentUser = async (req: any, res: any) => {
   try {
     console.log("hello");
@@ -63,65 +39,84 @@ export const getCurrentUser = async (req: any, res: any) => {
   }
 };
 
-// export const submitTestController = async (req:any, res:any) => {
-//   try {
-//     const { userId, questionsAttempted, correctAnswers } = req.body;
 
-//     // Input validation
-//     if (!userId || questionsAttempted === undefined || correctAnswers === undefined) {
-//       return res.status(400).json({ message: 'All fields are required: userId, questionsAttempted, correctAnswers' });
-//     }
+export const Aptitude = async (req:any,res:any)=>{
+  try {
+    const { userid, questionattempted, correctAnswer } = req.body;
 
-//     // Calculate percentage
-//     const percentage = (correctAnswers / questionsAttempted) * 100;
+    const percentage = (correctAnswer / questionattempted) * 100;
 
-//     // Create a new test record in the database
-//     const newTest = await prisma.testHistory.create({
-//       data: {
-//         userId,
-//         questionsAttempted,
-//         correctAnswers,
-//         percentage,
-//       },
-//     });
+    const testRound = await prisma.testRound.create({
+      data: {
+        userid,
+        TestType: 'APTITUDE',
+        questionattempted,
+        correctAnswer,
+        percentage,
+      },
+    });
 
-//     res.status(201).json({ message: 'Test data submitted successfully', data: newTest });
-//   } catch (error:any) {
-//     console.error('Error submitting test data:', error);
-//     res.status(500).json({ message: 'An error occurred while submitting test data', error: error.message });
-//   }
-// };
+    res.status(201).json(testRound);
+  } catch (error: any) {
+    console.error('Error storing aptitude test data:', error);
+    res.status(500).json({
+      msg: 'Error in storing aptitude test data',
+      error: error.message,
+    });
+  }
+}
 
+export const Advancedsa = async(req:any,res:any)=>{
+  try {
+    const { userid, questionattempted, correctAnswer } = req.body;
 
+    // Calculate percentage
+    const percentage = (correctAnswer / questionattempted) * 100;
 
-// export const getTestSubmission = async (req:any  ,res:any ) =>{
+    // Create a test round record for DSA
+    const testRound = await prisma.testRound.create({
+      data: {
+        userid,
+        TestType: 'DSA',
+        questionattempted,
+        correctAnswer,
+        percentage,
+      },
+    });
 
-//   try {
+    res.status(201).json(testRound);
+  } catch (error: any) {
+    console.error('Error storing DSA test data:', error);
+    res.status(500).json({
+      msg: 'Error in storing DSA test data',
+      error: error.message,
+    });
+  }
+}
 
-//     const userId = req.user?.id;
+export const Superadvancedsa = async (req:any, res:any)=>{
+  try {
+    const { userid, questionattempted, correctAnswer } = req.body;
 
-//     if (!userId) {
-//       return res.status(400).json({
-//         message: 'User ID is required',
-//       });
-//     }
+    // Calculate percentage
+    const percentage = (correctAnswer / questionattempted) * 100;
 
-//     const testSubmissions = await prisma.testHistory.findMany({
-//       where: { userId }, // Filter test history by userId
-//     });
+    const testRound = await prisma.testRound.create({
+      data: {
+        userid,
+        TestType: 'ADVANCEDSA',
+        questionattempted,
+        correctAnswer,
+        percentage,
+      },
+    });
 
-//     res.status(200).json({
-//       message: 'User test submissions fetched successfully',
-//       data: testSubmissions,
-//     });
-
-    
-//   } catch (error:any) {
-//     console.error('Error fetching user test submissions:', error);
-//     res.status(500).json({
-//       message: 'Failed to fetch test submissions',
-//       error: error.message,
-//     });    
-//   }
-
-// }
+    res.status(201).json(testRound);
+  } catch (error: any) {
+    console.error('Error storing Advanced DSA test data:', error);
+    res.status(500).json({
+      msg: 'Error in storing Advanced DSA test data',
+      error: error.message,
+    });
+  }
+}

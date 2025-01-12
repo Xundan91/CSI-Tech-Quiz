@@ -12,9 +12,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^6.2.1",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
+    "@types/nodemon": "^1.19.6",
     "@types/ws": "^8.5.13",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -28,8 +29,9 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.2",
     "express": "^4.21.2",
+    "node-dev": "^8.0.0",
     "nodemon": "^3.1.9",
-    "prisma": "^6.1.0",
+    "prisma": "^6.2.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"

@@ -1,70 +1,74 @@
 'use client';
-
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Timer, AlertCircle, Trophy, PartyPopper } from 'lucide-react';
+import { Timer, AlertCircle, PartyPopper, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { examQuestions } from './questions';
-import { useRouter } from 'next/navigation';
-import axios from "axios"
+import { roundConfigs } from './questions';
+import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
 
 export default function ExamPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const roundId = parseInt(searchParams.get('round') || '1');
+  const roundConfig = roundConfigs[roundId];
+
   const [roundStarted, setRoundStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes
+  const [timeLeft, setTimeLeft] = useState(45 * 60); // Start from 45 minutes (2700 seconds)
   const [examCompleted, setExamCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
+
+  const [userId, setUserId] = useState<number | null>(null);
   const { toast } = useToast();
-  const router = useRouter();
 
-  // useEffect(() => {
-  //   const completed = localStorage.getItem('examCompleted');
-  //   if (completed === 'true') {
-  //     toast({
-  //       title: "Exam Already Completed",
-  //       description: "You cannot retake this exam.",
-  //       variant: "destructive"
-  //     });
-  //     router.push('/student');
-  //   }
-  // }, []);
-
+  // Fetch user profile on component mount
   useEffect(() => {
-    if (roundStarted && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            handleSubmit();
-            return 0;
-          }
-          return prev - 1;
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8081/api/user/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-      }, 1000);
-      return () => clearInterval(timer);
+
+        if (response.data?.id) {
+          setUserId(response.data.id);
+        } else {
+          throw new Error("User ID not found in profile response.");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user profile.",
+          variant: "destructive",
+        });
+        router.push('/');
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  // Timer Effect
+  useEffect(() => {
+    if (timeLeft > 0) { 
+      const timer = setTimeout(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 10 );
+
+      return () => clearTimeout(timer);
+    } else if (timeLeft <= 300 ) {
+      handleSubmit();
     }
   }, [roundStarted, timeLeft]);
-
-  useEffect(() => {
-    if (examCompleted) {
-      const timer = setInterval(() => {
-        setRedirectCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            router.push('/student');
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [examCompleted]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -72,31 +76,98 @@ export default function ExamPage() {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const handleStartExam = () => setRoundStarted(true);
+  const handleStartExam = () => {
+    setRoundStarted(true);
+  };
+
+  useEffect(() => {
+    if (examCompleted) {
+      const redirectTimer = setInterval(() => {
+        setRedirectCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(redirectTimer);
+            router.push('/student'); // Redirect after countdown
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(redirectTimer); // Cleanup on unmount
+    }
+  }, [examCompleted]);
 
   const handleAnswer = (questionId: number, answer: string) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [questionId]: answer
+      [questionId]: answer,
     }));
   };
 
-  const handleSubmit = () => {
-    const calculatedScore = Object.entries(answers).reduce((acc, [questionId, answer]) => {
-      const question = examQuestions.find(q => q.id === parseInt(questionId));
-      if (question && question.correctAnswer === answer) {
+  const handleSubmit = async () => {
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "User ID not found. Please login again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const calculatedScore = roundConfig.questions.reduce((acc, question) => {
+      if (answers[question.id] === question.correctAnswer) {
         return acc + 1;
       }
       return acc;
     }, 0);
 
     setScore(calculatedScore);
-    localStorage.setItem('examCompleted', 'true');
-    setExamCompleted(true);
-  };
 
-  if (examCompleted) {
-    return (
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error("Authentication token not found.");
+      }
+
+      const requestData = {
+        userid: userId,
+        questionattempted: roundConfig.questions.length,
+        correctAnswer: calculatedScore,
+      };
+
+      const endpoints = [
+        'http://localhost:8081/api/user/aptitude',
+        'http://localhost:8081/api/user/advancedsa',
+        'http://localhost:8081/api/user/superadvancedsa',
+      ];
+
+      const endpoint = endpoints[roundId - 1];
+      if (!endpoint) throw new Error("Invalid round ID.");
+
+      const response = await axios.post(endpoint, requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 201) {
+        localStorage.setItem(`examCompleted_${roundId}`, 'true');
+        setExamCompleted(true);
+      }
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+      toast({
+        title: "Submission Error",
+        description: "There was an error submitting your exam.",
+        variant: "destructive",
+      });
+    }
+  };
+  return (
+    <div className="min-h-screen bg-background p-8">
+
+{examCompleted && (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -127,7 +198,7 @@ export default function ExamPage() {
                   <PartyPopper className="w-5 h-5 text-primary" />
                 </div>
                 <p className="text-lg mb-6">
-                  Your Score: <span className="font-bold">{score}</span> out of {examQuestions.length}
+                  Your Score: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
                 </p>
                 <Button 
                   size="lg"
@@ -144,48 +215,9 @@ export default function ExamPage() {
           </Card>
         </motion.div>
       </div>
-    );
-  }
+    )}
 
-  if (!roundStarted) {
-    return (
-      <div className="min-h-screen bg-background p-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto"
-        >
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Round 1: General Knowledge</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Instructions:</h3>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>You have 30 minutes to complete this exam</li>
-                  <li>There are {examQuestions.length} multiple choice questions</li>
-                  <li>Each question has only one correct answer</li>
-                  <li>You cannot retake this exam once submitted</li>
-                  <li>The exam will auto-submit when time expires</li>
-                </ul>
-              </div>
-              <Button 
-                size="lg" 
-                className="w-full mt-6" 
-                onClick={handleStartExam}
-              >
-                Start Exam
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-background p-8">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -194,7 +226,7 @@ export default function ExamPage() {
         <Card className="sticky top-4 z-10 mb-4">
           <CardContent className="py-3 flex justify-between items-center">
             <span className="font-semibold">
-              Round 1: General Knowledge
+              Round {roundId}: {roundConfig.title}
             </span>
             <div className="flex items-center space-x-2 text-lg font-semibold">
               <Timer className="w-5 h-5" />
@@ -206,7 +238,7 @@ export default function ExamPage() {
         </Card>
 
         <div className="space-y-8">
-          {examQuestions.map((question, index) => (
+          {roundConfig.questions.map((question, index) => (
             <motion.div
               key={question.id}
               initial={{ x: -20, opacity: 0 }}
@@ -218,7 +250,7 @@ export default function ExamPage() {
                   <h3 className="text-lg font-medium mb-4">
                     {index + 1}. {question.question}
                   </h3>
-                  
+
                   <RadioGroup
                     value={answers[question.id]}
                     onValueChange={(value) => handleAnswer(question.id, value)}
@@ -245,15 +277,15 @@ export default function ExamPage() {
         >
           <Card>
             <CardContent className="py-3">
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 size="lg"
                 onClick={handleSubmit}
-                disabled={Object.keys(answers).length !== examQuestions.length}
+                disabled={Object.keys(answers).length !== roundConfig.questions.length}
               >
                 Submit Exam
               </Button>
-              {Object.keys(answers).length !== examQuestions.length && (
+              {Object.keys(answers).length !== roundConfig.questions.length && (
                 <p className="text-sm text-muted-foreground text-center mt-2 flex items-center justify-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
                   Please answer all questions before submitting

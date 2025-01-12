@@ -21,21 +21,21 @@ export default function Home() {
     
     try {
       // First try admin login
-      const adminResponse = await fetch('http://localhost:8081/api/admin/login' , { //https://csi-tech-quiz.onrender.com
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      // const adminResponse = await fetch('http://localhost:8081/api/admin/login' , { //https://csi-tech-quiz.onrender.com
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ email, password }),
+      // });
 
-      if (adminResponse.ok) {
-        const adminData = await adminResponse.json();
-        // Store the admin token
-        localStorage.setItem('token', adminData.token);
-        window.location.href = '/admin';
-        return;
-      }
+      // if (adminResponse.ok) {
+      //   const adminData = await adminResponse.json();
+      //   // Store the admin token
+      //   localStorage.setItem('token', adminData.token);
+      //   window.location.href = '/admin';
+      //   return;
+      // }
 
       // If admin login fails, try user login
       const userResponse = await fetch('http://localhost:8081/api/user/login', {

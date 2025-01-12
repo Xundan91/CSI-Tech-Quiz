@@ -2,32 +2,22 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-// import { getAllUsers,addQuestions, } from "../controllers/userController";
-import { getCurrentUser,getAllQuestionsWithOptions } from "../controllers/userController";
+import { getCurrentUser } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
-// import { getCurrentUser,submitTestController,getTestSubmission } from "../controllers/userController";
-import {submitTestController,getTestSubmission,getCurrentRound,} from "../controllers/examController";
-
+import { Aptitude, Superadvancedsa , Advancedsa } from "../controllers/userController";
 const prisma = new PrismaClient();
 const router = Router();
 
-//exam question get and post
-
-router.get("/getallquestions",authenticate,getAllQuestionsWithOptions)
-
-// Exam routes
-router.post("/submit-test", authenticate, submitTestController);
-router.get("/test-submissions", authenticate, getTestSubmission);
-router.get("/current-round", authenticate, getCurrentRound);
 
 
+router.post('/aptitude',authenticate,Aptitude)
+router.post('/advancedsa',authenticate,Advancedsa)
+router.post('/superadvancedsa',authenticate,Superadvancedsa)
 
 
 router.get("/profile",authenticate, getCurrentUser);
 
 
-// router.post('/submit-test',authenticate, submitTestController);
-// router.get('/test-submissions', authenticate, getTestSubmission);
 
 
 router.post("/signup", async (req, res) => {
