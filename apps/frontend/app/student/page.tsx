@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircgile2, Brain, Code, Cpu } from 'lucide-react';
+import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu } from 'lucide-react';
 import Link from 'next/link';
 
 // Updated rounds data with backend test type mapping
@@ -68,7 +68,7 @@ export default function StudentDashboard() {
         const token = localStorage.getItem('token');
         
         // Fetch profile
-        const profileResponse = await axios.get('http://localhost:8081/api/user/profile', {
+        const profileResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +82,7 @@ export default function StudentDashboard() {
         });
 
         // Fetch marks
-        const marksResponse = await axios.get<TestScore[]>('http://localhost:8081/api/user/getusermarks', {
+        const marksResponse = await axios.get<TestScore[]>('https://csi-tech-quiz.onrender.com/api/user/getusermarks', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
