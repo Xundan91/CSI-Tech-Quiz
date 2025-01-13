@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma,TestType,testRound } from "@prisma/client";
+import { userInfo } from "os";
 
 const prisma = new PrismaClient();
 
@@ -120,3 +121,61 @@ export const Superadvancedsa = async (req:any, res:any)=>{
     });
   }
 }
+// export const Getmarksdata = async (req:any , res:any)=>{
+//   const userid = req.userid?.id;
+//   const usermarks = await prisma.testRound.findUnique({
+//     userid,
+
+
+//   })
+// export const getallmarkswithuser = async (req:any , res:any)=>{
+//   const {userId} = req.params;
+//   const testRound = await prisma.testRound.findMany{
+//     where :{
+//       userid : parseInt( userId, 10)
+//     }
+//   }
+// }
+
+
+export const getUserTestDetails = async (req:any, res:any) => {
+  try {
+    console.log(req.user);
+    const userId = req.user?.id;
+    // Fetch the oldest test rounds for APTITUDE, DSA, and ADVANCEDSA
+    const testRounds = await prisma.testRound.findMany({
+      where: {
+        userid: parseInt(userId, 10),
+        TestType: { in: [TestType.APTITUDE, TestType.DSA, TestType.ADVANCEDSA] },
+      },
+      orderBy: {
+        roundDate: 'asc',
+      },
+    });
+
+    const groupedData: Partial<Record<TestType, testRound>> = {};
+    testRounds.forEach((test) => {
+      if (!groupedData[test.TestType]) {
+        groupedData[test.TestType] = test;
+      }
+    });
+
+    // Prepare response
+    const response = [TestType.APTITUDE, TestType.DSA, TestType.ADVANCEDSA].map((type) => {
+      const test = groupedData[type];
+      return test
+        ? {
+            TestType: type,
+            questionAttempted: test.questionattempted,
+            correctAnswer: test.correctAnswer,
+            percentage: test.percentage,
+          }
+        : { TestType: type, message: 'No data available' };
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('Error fetching test details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

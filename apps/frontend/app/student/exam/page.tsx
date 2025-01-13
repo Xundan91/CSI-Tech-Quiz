@@ -19,7 +19,7 @@ export default function ExamPage() {
 
   const [roundStarted, setRoundStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(45 * 60); // Start from 45 minutes (2700 seconds)
+  const [timeLeft, setTimeLeft] = useState(45 * 60); 
   const [examCompleted, setExamCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
@@ -62,7 +62,7 @@ export default function ExamPage() {
     if (timeLeft > 0) { 
       const timer = setTimeout(() => {
         setTimeLeft((prevTime) => prevTime - 1);
-      }, 10 );
+      }, 1000);
 
       return () => clearTimeout(timer);
     } else if (timeLeft <= 300 ) {

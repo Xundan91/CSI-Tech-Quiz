@@ -6,14 +6,15 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu } from 'lucide-react';
+import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircgile2, Brain, Code, Cpu } from 'lucide-react';
 import Link from 'next/link';
 
-// Mock rounds data
+// Updated rounds data with backend test type mapping
 const rounds = [
   {
     id: 1,
     name: 'General Knowledge',
+    backendType: 'APTITUDE',
     icon: Brain,
     description: 'Test your knowledge across various general topics',
     buttonText: 'Start General Knowledge Round',
@@ -22,6 +23,7 @@ const rounds = [
   {
     id: 2,
     name: 'Technical Skills',
+    backendType: 'DSA',
     icon: Code,
     description: 'Programming and technical concepts assessment',
     buttonText: 'Start Technical Round',
@@ -30,6 +32,7 @@ const rounds = [
   {
     id: 3,
     name: 'Advanced Concepts',
+    backendType: 'ADVANCEDSA',
     icon: Cpu,
     description: 'Complex programming and system design challenges',
     buttonText: 'Start Advanced Round',
@@ -37,54 +40,76 @@ const rounds = [
   },
 ];
 
+interface TestScore {
+  TestType: string;
+  questionAttempted?: number;
+  correctAnswer?: number;
+  percentage?: number;
+  message?: string;
+}
+
+interface MarksData {
+  [key: number]: TestScore;
+}
+
 export default function StudentDashboard() {
   const [completedRounds, setCompletedRounds] = useState<number[]>([]);
   const [studentProfile, setStudentProfile] = useState<{
     name: string;
     email: string;
-    course: string; // Assuming 'course' field exists in backend response
-    avatar: string | null; // If avatar URL exists
+    course: string;
+    avatar: string | null;
   } | null>(null);
+  const [marks, setMarks] = useState<MarksData>({});
 
   useEffect(() => {
-    // Fetch the student profile from the API using Axios
-    const fetchProfile = async () => {
+    const fetchProfileAndMarks = async () => {
       try {
-        const token = localStorage.getItem("token");         
-        // Assuming token is stored in localStorage
-        const response = await axios.get('http://localhost:8081/api/user/profile', {
+        const token = localStorage.getItem('token');
+        
+        // Fetch profile
+        const profileResponse = await axios.get('http://localhost:8081/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        // Update profile with response data
         setStudentProfile({
-          name: response.data.name,
-          email: response.data.email,
-          
-          course: "Computer Science", // You can modify this to match actual course data
-          avatar: response.data.avatar || null, // Assuming the backend might return an avatar URL
+          name: profileResponse.data.name,
+          email: profileResponse.data.email,
+          course: 'Computer Science',
+          avatar: profileResponse.data.avatar || null,
         });
+
+        // Fetch marks
+        const marksResponse = await axios.get<TestScore[]>('http://localhost:8081/api/user/getusermarks', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Map fetched marks data to the rounds with proper type assertion
+        const marksData = marksResponse.data.reduce<MarksData>((acc, score) => {
+          const round = rounds.find((r) => r.backendType === score.TestType);
+          if (round) {
+            acc[round.id] = score;
+          }
+          return acc;
+        }, {});
+
+        setMarks(marksData);
+        
+        // Update completed rounds based on marks that have actual scores
+        const completed = Object.entries(marksData)
+          .filter(([_, score]) => score.correctAnswer !== undefined)
+          .map(([roundId]) => Number(roundId));
+        setCompletedRounds(completed);
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error('Error fetching profile or marks:', error);
       }
     };
 
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
-    // Check which rounds are completed
-    const completed = rounds.map((round) => {
-      return localStorage.getItem(`examCompleted_${round.id}`) === 'true';
-    });
-    setCompletedRounds(
-      completed.reduce((acc, curr, idx) => {
-        if (curr) acc.push(idx + 1);
-        return acc;
-      }, [] as number[])
-    );
+    fetchProfileAndMarks();
   }, []);
 
   const getRoundStatus = (roundId: number) => {
@@ -208,58 +233,71 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Marks Card */}
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Trophy className="mr-2" /> Your Marks
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {rounds.map((round, index) => {
-                  const completed = completedRounds.includes(round.id);
-                  const score = completed ? Math.floor(Math.random() * 5 + 5) : 0; // Mock score between 5-10
-                  
-                  return (
-                    <motion.div
-                      key={round.id}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-medium">{round.name}</h3>
-                        <div className="text-right">
-                          <span className="text-lg font-semibold">
-                            {score}/10
-                          </span>
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Trophy className="mr-2" /> Your Marks
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {rounds.map((round, index) => {
+                const scoreData = marks[round.id];
+                const hasScore = scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
+                const score = hasScore ? scoreData.correctAnswer : 0;
+                const total = hasScore ? scoreData.questionAttempted : 10;
+                const percentage = hasScore ? scoreData.percentage : 0;
+
+                return (
+                  <motion.div
+                    key={round.id}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-medium">{round.name}</h3>
+                      <div className="text-right">
+                        {hasScore ? (
+                          <>
+                            <span className="text-lg font-semibold">
+                              {score}/{total}
+                            </span>
+                            <p className="text-sm text-muted-foreground">
+                              Completed
+                            </p>
+                          </>
+                        ) : (
                           <p className="text-sm text-muted-foreground">
-                            {completed ? 'Completed' : 'Not attempted'}
+                            {scoreData?.message || 'Not attempted'}
                           </p>
-                        </div>
+                        )}
                       </div>
-                      <div className="w-full bg-secondary rounded-full h-2">
-                        <div
-                          className="bg-primary rounded-full h-2 transition-all duration-500"
-                          style={{ width: `${(score / 10) * 100}%` }}
-                        />
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Score: {((score / 10) * 100).toFixed(1)}%
-                      </p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                    </div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div
+                        className="bg-primary rounded-full h-2 transition-all duration-500"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {hasScore ? `Score: ${percentage?.toFixed(1)}%` : 'No score available'}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
       </motion.div>
     </div>
   );

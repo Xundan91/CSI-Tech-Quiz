@@ -2,13 +2,13 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-import { getCurrentUser } from "../controllers/userController";
+import { getCurrentUser,getUserTestDetails } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
-import { Aptitude, Superadvancedsa , Advancedsa } from "../controllers/userController";
+import { Aptitude, Superadvancedsa , Advancedsa ,} from "../controllers/userController";
 const prisma = new PrismaClient();
 const router = Router();
 
-
+router.get('/getusermarks',authenticate , getUserTestDetails)
 
 router.post('/aptitude',authenticate,Aptitude)
 router.post('/advancedsa',authenticate,Advancedsa)
@@ -47,5 +47,6 @@ router.post("/login", async (req:any, res:any) => {
     res.status(500).json({ error: "Login failed", details: err });
   }
 });
+
 
 export default router;
