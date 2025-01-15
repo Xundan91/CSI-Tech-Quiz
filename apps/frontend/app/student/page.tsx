@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu } from 'lucide-react';
+import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu,Timer,Medal,ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 // Updated rounds data with backend test type mapping
@@ -46,6 +46,7 @@ interface TestScore {
   correctAnswer?: number;
   percentage?: number;
   message?: string;
+  timeTaken?: number; 
 }
 
 interface MarksData {
@@ -122,6 +123,18 @@ export default function StudentDashboard() {
     return 'locked';
   };
 
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+  
+    return [
+      hours.toString().padStart(2, '0'),
+      minutes.toString().padStart(2, '0'),
+      secs.toString().padStart(2, '0'),
+    ].join(':');
+  };
+
   return (
     <div className="min-h-screen bg-background p-8">
       <motion.div
@@ -163,7 +176,7 @@ export default function StudentDashboard() {
                   </div>
                 </div>
               ) : (
-                <p>Loading profile...</p>
+                <p>loading ....</p>
               )}
             </CardContent>
           </Card>
@@ -235,69 +248,95 @@ export default function StudentDashboard() {
         </motion.div>
 
         {/* Marks Card */}
-        <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Trophy className="mr-2" /> Your Marks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {rounds.map((round, index) => {
-                const scoreData = marks[round.id];
-                const hasScore = scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
-                const score = hasScore ? scoreData.correctAnswer : 0;
-                const total = hasScore ? scoreData.questionAttempted : 10;
-                const percentage = hasScore ? scoreData.percentage : 0;
+{/* Marks Card */}
+<motion.div
+  initial={{ scale: 0.9, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ delay: 0.4 }}
+>
+  <Card>
+    <CardHeader>
+      <div className="flex items-center justify-between">
+        <CardTitle className="flex items-center">
+          <Trophy className="mr-2" /> Your Marks
+        </CardTitle>
+        <Link href="/student/rankings">
+          <Button variant="outline" className="space-x-2">
+            <Medal className="w-4 h-4" />
+            <span>View Rankings</span>
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </Link>
+      </div>
+    </CardHeader>
 
-                return (
-                  <motion.div
-                    key={round.id}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-medium">{round.name}</h3>
-                      <div className="text-right">
-                        {hasScore ? (
-                          <>
-                            <span className="text-lg font-semibold">
-                              {score}/{total}
-                            </span>
-                            <p className="text-sm text-muted-foreground">
-                              Completed
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-sm text-muted-foreground">
-                            {scoreData?.message || 'Not attempted'}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div
-                        className="bg-primary rounded-full h-2 transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {hasScore ? `Score: ${percentage?.toFixed(1)}%` : 'No score available'}
+    <CardContent>
+      <div className="space-y-6">
+        {rounds.map((round, index) => {
+          const scoreData = marks[round.id];
+          const hasScore =
+            scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
+          const score = hasScore ? scoreData.correctAnswer : 0;
+          const total = hasScore ? scoreData.questionAttempted : 10;
+          const percentage = hasScore ? scoreData.percentage : 0;
+          const timeTaken = hasScore && scoreData.timeTaken ? scoreData.timeTaken : null;
+
+          return (
+            <motion.div
+              key={round.id}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: index * 0.1 }}
+              className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium">{round.name}</h3>
+                <div className="text-right">
+                  {hasScore ? (
+                    <>
+                      <span className="text-lg font-semibold">
+                        {score}/{total}
+                      </span>
+                      <p className="text-sm text-muted-foreground">Completed</p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {scoreData?.message || 'Not attempted'}
                     </p>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+                  )}
+                  {timeTaken ? (
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Timer className="w-4 h-4 mr-1" />
+                      Time: {formatTime(timeTaken)}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      Not attempted
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div
+                  className="bg-primary rounded-full h-2 transition-all duration-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                {hasScore
+                  ? `Score: ${percentage?.toFixed(1)}%`
+                  : 'No score available'}
+              </p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </CardContent>
+  </Card>
+</motion.div>
+
+
       </motion.div>
     </div>
   );

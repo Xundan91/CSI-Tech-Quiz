@@ -31,6 +31,7 @@ model testRound {
   percentage        Float
   roundDate         DateTime @default(now())
   User              User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  Totaltime        Int?
 }
 
 enum TestType {

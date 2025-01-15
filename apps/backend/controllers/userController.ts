@@ -43,7 +43,7 @@ export const getCurrentUser = async (req: any, res: any) => {
 
 export const Aptitude = async (req:any,res:any)=>{
   try {
-    const { userid, questionattempted, correctAnswer } = req.body;
+    const { userid, questionattempted, correctAnswer,Totaltime } = req.body;
 
     const percentage = (correctAnswer / questionattempted) * 100;
 
@@ -54,6 +54,7 @@ export const Aptitude = async (req:any,res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
+        Totaltime
       },
     });
 
@@ -69,7 +70,7 @@ export const Aptitude = async (req:any,res:any)=>{
 
 export const Advancedsa = async(req:any,res:any)=>{
   try {
-    const { userid, questionattempted, correctAnswer } = req.body;
+    const { userid, questionattempted, correctAnswer,Totaltime } = req.body;
 
     // Calculate percentage
     const percentage = (correctAnswer / questionattempted) * 100;
@@ -82,6 +83,8 @@ export const Advancedsa = async(req:any,res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
+        Totaltime
+        
       },
     });
 
@@ -97,7 +100,7 @@ export const Advancedsa = async(req:any,res:any)=>{
 
 export const Superadvancedsa = async (req:any, res:any)=>{
   try {
-    const { userid, questionattempted, correctAnswer } = req.body;
+    const { userid, questionattempted, correctAnswer ,Totaltime} = req.body;
 
     // Calculate percentage
     const percentage = (correctAnswer / questionattempted) * 100;
@@ -109,6 +112,7 @@ export const Superadvancedsa = async (req:any, res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
+        Totaltime
       },
     });
 
@@ -169,6 +173,7 @@ export const getUserTestDetails = async (req:any, res:any) => {
             questionAttempted: test.questionattempted,
             correctAnswer: test.correctAnswer,
             percentage: test.percentage,
+            timeTaken: test.Totaltime,
           }
         : { TestType: type, message: 'No data available' };
     });
@@ -177,5 +182,47 @@ export const getUserTestDetails = async (req:any, res:any) => {
   } catch (error) {
     console.error('Error fetching test details:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+// Controller function to fetch rankings
+export const getRankings = async (req:any, res: any) => {
+  try {
+    // Fetch rankings for APTITUDE, DSA, and ADVANCEDSA
+    const rankings = await prisma.testRound.findMany({
+      where: {
+        TestType: {
+          in: ['APTITUDE', 'DSA', 'ADVANCEDSA'], // Filter by test types
+        },
+      },
+      orderBy: [
+        {
+          correctAnswer: 'desc', // Sort by correctAnswer (marks) in descending order
+        },
+        {
+          Totaltime: 'asc', // If marks are the same, sort by Totaltime (time taken) in ascending order
+        },
+      ],
+      include: {
+        User: true, // Include User information for each test round
+      },
+    });
+
+    // Group the rankings by TestType
+    const groupedRankings = rankings.reduce((acc: any, round: any) => {
+      if (!acc[round.TestType]) {
+        acc[round.TestType] = [];
+      }
+      acc[round.TestType].push(round);
+      return acc;
+    }, {});
+
+    // Return the rankings grouped by TestType
+    return res.status(200).json(groupedRankings);
+  } catch (error) {
+    console.error('Error fetching rankings:', error);
+    return res.status(500).json({ message: 'Error fetching rankings' });
   }
 };
