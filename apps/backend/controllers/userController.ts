@@ -55,7 +55,8 @@ export const Aptitude = async (req:any,res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
-        Totaltime
+        Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
+
       },
     });
 
@@ -84,7 +85,8 @@ export const Advancedsa = async(req:any,res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
-        Totaltime
+        Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
+
         
       },
     });
@@ -113,7 +115,8 @@ export const Superadvancedsa = async (req:any, res:any)=>{
         questionattempted,
         correctAnswer,
         percentage,
-        Totaltime
+        Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
+
       },
     });
 
@@ -187,7 +190,7 @@ export const getUserTestDetails = async (req:any, res:any) => {
 };
 
 // Controller function to fetch rankings
-export const getRankings = async (req:any, res: any) => {
+export const getRankings = async (req: any, res: any) => {
   try {
     // Fetch rankings for APTITUDE, DSA, and ADVANCEDSA
     const rankings = await prisma.testRound.findMany({
