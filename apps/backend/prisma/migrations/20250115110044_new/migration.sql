@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "testRound" ALTER COLUMN "Totaltime" SET DATA TYPE DOUBLE PRECISION;

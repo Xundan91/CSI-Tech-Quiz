@@ -5,6 +5,7 @@ import { userInfo } from "os";
 const prisma = new PrismaClient();
 
 
+
 export const getCurrentUser = async (req: any, res: any) => {
   try {
     console.log("hello");
@@ -184,8 +185,6 @@ export const getUserTestDetails = async (req:any, res:any) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-
 
 // Controller function to fetch rankings
 export const getRankings = async (req:any, res: any) => {
