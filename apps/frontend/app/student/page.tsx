@@ -83,7 +83,7 @@ export default function StudentDashboard() {
         });
 
         // Fetch marks
-        const marksResponse = await axios.get<TestScore[]>('https://csi-tech-quiz.onrender.com/api/user/rankings', {
+        const marksResponse = await axios.get<TestScore[]>('https://csi-tech-quiz.onrender.com/api/user/getusermarks', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

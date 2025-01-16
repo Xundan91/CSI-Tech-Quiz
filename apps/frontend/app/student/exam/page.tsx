@@ -32,7 +32,7 @@ export default function ExamPage() {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8081/api/user/profile', {
+        const response = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,9 +138,9 @@ export default function ExamPage() {
       };
 
       const endpoints = [
-        'http://localhost:8081/api/user/aptitude',
-        'http://localhost:8081/api/user/advancedsa',
-        'http://localhost:8081/api/user/superadvancedsa',
+        'https://csi-tech-quiz.onrender.com/api/user/aptitude',
+        'https://csi-tech-quiz.onrender.com/api/user/advancedsa',
+        'https://csi-tech-quiz.onrender.com/api/user/superadvancedsa',
       ];
 
       const endpoint = endpoints[roundId - 1];
