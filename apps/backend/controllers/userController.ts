@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient, Prisma,TestType,testRound } from "@prisma/client";
-import { userInfo } from "os";
+
 
 const prisma = new PrismaClient();
 
@@ -8,13 +8,9 @@ const prisma = new PrismaClient();
 
 export const getCurrentUser = async (req: any, res: any) => {
   try {
-    console.log("hello");
+ 
     const userId = req.user?.id;
-    console.log(userId);
     
-    console.log("hello");
-    
-
     if (!userId) {
       return res.status(400).json({ error: "User ID is missing from the request." });
     }
