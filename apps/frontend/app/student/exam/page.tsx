@@ -129,10 +129,13 @@ export default function ExamPage() {
         throw new Error("Authentication token not found.");
       }
       const totalTimeTaken = 45 * 60 - timeLeft;
+      const answerquestioncount = Object.keys(answers).length;
+      
+      
 
       const requestData = {
         userid: userId,
-        questionattempted: roundConfig.questions.length,
+        questionattempted: answerquestioncount,
         correctAnswer: calculatedScore,
         Totaltime: totalTimeTaken,
       };
