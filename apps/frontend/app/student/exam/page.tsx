@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -10,6 +10,47 @@ import { useToast } from '@/hooks/use-toast';
 import { roundConfigs } from './questions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+interface ConfirmationDialogProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+// Confirmation Dialog Component with TypeScript props
+const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
+
+
+  return (
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="w-full max-w-md mx-auto p-4"
+      >
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <h2 className="text-2xl font-bold mb-4">Confirm Submission</h2>
+            <p className="text-muted-foreground mb-6">
+              Are you sure you want to submit your exam? This action cannot be undone.
+            </p>
+            <div className="flex space-x-4 justify-center">
+              <Button variant="outline" onClick={onCancel}>
+                No, Continue Exam
+              </Button>
+              <Button onClick={onConfirm}>
+                Yes, Submit Exam
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+};
+
+
 
 export default function ExamPage() {
   const router = useRouter();
@@ -19,11 +60,11 @@ export default function ExamPage() {
 
   const [roundStarted, setRoundStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(45 * 60); 
+  const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [examCompleted, setExamCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
   const { toast } = useToast();
 
@@ -59,14 +100,14 @@ export default function ExamPage() {
 
   // Timer Effect
   useEffect(() => {
-    if (timeLeft > 0) { 
+    if (timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
 
       return () => clearTimeout(timer);
-    } else if (timeLeft <= 300 ) {
-      handleSubmit();
+    } else if (timeLeft <= 300) {
+      handleSubmitConfirmed();
     }
   }, [roundStarted, timeLeft]);
 
@@ -86,14 +127,14 @@ export default function ExamPage() {
         setRedirectCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(redirectTimer);
-            router.push('/student'); // Redirect after countdown
+            router.push('/student');
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
 
-      return () => clearInterval(redirectTimer); // Cleanup on unmount
+      return () => clearInterval(redirectTimer);
     }
   }, [examCompleted]);
 
@@ -104,7 +145,12 @@ export default function ExamPage() {
     }));
   };
 
-  const handleSubmit = async () => {
+  // Modified submission handling
+  const handleSubmit = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleSubmitConfirmed = async () => {
     if (!userId) {
       toast({
         title: "Error",
@@ -130,8 +176,6 @@ export default function ExamPage() {
       }
       const totalTimeTaken = 45 * 60 - timeLeft;
       const answerquestioncount = Object.keys(answers).length;
-      
-      
 
       const requestData = {
         userid: userId,
@@ -168,60 +212,60 @@ export default function ExamPage() {
         variant: "destructive",
       });
     }
+    setShowConfirmation(false);
   };
+
   return (
     <div className="min-h-screen bg-background p-8">
-
-{examCompleted && (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-lg mx-auto p-4"
-        >
-          <Card className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
-            <CardContent className="pt-6 text-center relative z-10">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-                className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4"
-              >
-                <Trophy className="w-8 h-8 text-primary" />
-              </motion.div>
-              
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <h2 className="text-2xl font-bold mb-2">Thank You for Participating!</h2>
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <PartyPopper className="w-5 h-5 text-primary" />
-                  <span className="text-xl font-semibold">CSI Event 2024</span>
-                  <PartyPopper className="w-5 h-5 text-primary" />
-                </div>
-                <p className="text-lg mb-6">
-                  Your Score: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
-                </p>
-                <Button 
-                  size="lg"
-                  onClick={() => router.push('/student')}
-                  className="w-full mb-4"
+      {examCompleted && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-full max-w-lg mx-auto p-4"
+          >
+            <Card className="relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
+              <CardContent className="pt-6 text-center relative z-10">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.2 }}
+                  className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4"
                 >
-                  Return to Dashboard
-                </Button>
-                <p className="text-sm text-muted-foreground">
-                  Auto-redirecting in {redirectCountdown} seconds...
-                </p>
-              </motion.div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-    )}
-
+                  <Trophy className="w-8 h-8 text-primary" />
+                </motion.div>
+                
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <h2 className="text-2xl font-bold mb-2">Thank You for Participating!</h2>
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <PartyPopper className="w-5 h-5 text-primary" />
+                    <span className="text-xl font-semibold">CSI Event 2024</span>
+                    <PartyPopper className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-lg mb-6">
+                    Your Score: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
+                  </p>
+                  <Button 
+                    size="lg"
+                    onClick={() => router.push('/student')}
+                    className="w-full mb-4"
+                  >
+                    Return to Dashboard
+                  </Button>
+                  <p className="text-sm text-muted-foreground">
+                    Auto-redirecting in {redirectCountdown} seconds...
+                  </p>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -298,6 +342,14 @@ export default function ExamPage() {
             </CardContent>
           </Card>
         </motion.div>
+
+        <AnimatePresence>
+          <ConfirmationDialog 
+            isOpen={showConfirmation}
+            onConfirm={handleSubmitConfirmed}
+            onCancel={() => setShowConfirmation(false)}
+          />
+        </AnimatePresence>
       </motion.div>
     </div>
   );
