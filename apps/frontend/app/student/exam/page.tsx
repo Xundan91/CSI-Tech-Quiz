@@ -283,7 +283,6 @@ export default function ExamPage() {
                 className="w-full"
                 size="lg"
                 onClick={handleSubmit}
-                disabled={Object.keys(answers).length !== roundConfig.questions.length}
               >
                 Submit Exam
               </Button>
