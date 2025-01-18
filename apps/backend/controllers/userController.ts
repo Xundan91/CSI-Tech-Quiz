@@ -37,11 +37,11 @@ export const getCurrentUser = async (req: any, res: any) => {
   }
 };
 
-
-export const Aptitude = async (req:any,res:any)=>{
+export const Aptitude = async (req: any, res: any) => {
   try {
-    const { userid, questionattempted, correctAnswer,Totaltime } = req.body;
+    const { userid, questionattempted, correctAnswer, Totaltime, TotalcorrectAnswerScore, positiveAnswerScore, wrongAnswerScore } = req.body;
 
+    // Calculate percentage
     const percentage = (correctAnswer / questionattempted) * 100;
 
     const testRound = await prisma.testRound.create({
@@ -50,9 +50,11 @@ export const Aptitude = async (req:any,res:any)=>{
         TestType: 'APTITUDE',
         questionattempted,
         correctAnswer,
+        TotalcorrectAnswerScore,  
+        positiveAnswerScore,      
+        wrongAnswerScore,         
         percentage,
         Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
-
       },
     });
 
@@ -64,26 +66,26 @@ export const Aptitude = async (req:any,res:any)=>{
       error: error.message,
     });
   }
-}
+};
 
-export const Advancedsa = async(req:any,res:any)=>{
+export const Advancedsa = async (req: any, res: any) => {
   try {
-    const { userid, questionattempted, correctAnswer,Totaltime } = req.body;
+    const { userid, questionattempted, correctAnswer, Totaltime, TotalcorrectAnswerScore, positiveAnswerScore, wrongAnswerScore } = req.body;
 
     // Calculate percentage
     const percentage = (correctAnswer / questionattempted) * 100;
 
-    // Create a test round record for DSA
     const testRound = await prisma.testRound.create({
       data: {
         userid,
         TestType: 'DSA',
         questionattempted,
         correctAnswer,
+        TotalcorrectAnswerScore,  
+        positiveAnswerScore,      
+        wrongAnswerScore,         
         percentage,
         Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
-
-        
       },
     });
 
@@ -95,11 +97,11 @@ export const Advancedsa = async(req:any,res:any)=>{
       error: error.message,
     });
   }
-}
+};
 
-export const Superadvancedsa = async (req:any, res:any)=>{
+export const Superadvancedsa = async (req: any, res: any) => {
   try {
-    const { userid, questionattempted, correctAnswer ,Totaltime} = req.body;
+    const { userid, questionattempted, correctAnswer, Totaltime, TotalcorrectAnswerScore, positiveAnswerScore, wrongAnswerScore } = req.body;
 
     // Calculate percentage
     const percentage = (correctAnswer / questionattempted) * 100;
@@ -110,9 +112,11 @@ export const Superadvancedsa = async (req:any, res:any)=>{
         TestType: 'ADVANCEDSA',
         questionattempted,
         correctAnswer,
+        TotalcorrectAnswerScore,  
+        positiveAnswerScore,      
+        wrongAnswerScore,         
         percentage,
         Totaltime: Totaltime !== undefined ? Totaltime : null, // Handle Totaltime properly
-
       },
     });
 
@@ -124,7 +128,8 @@ export const Superadvancedsa = async (req:any, res:any)=>{
       error: error.message,
     });
   }
-}
+};
+
 // export const Getmarksdata = async (req:any , res:any)=>{
 //   const userid = req.userid?.id;
 //   const usermarks = await prisma.testRound.findUnique({

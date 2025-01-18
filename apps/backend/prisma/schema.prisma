@@ -23,15 +23,20 @@ model User {
 }
 
 model testRound {
-  id                Int      @id @default(autoincrement())
-  userid            Int
-  TestType          TestType
-  questionattempted Int
-  correctAnswer     Int
-  percentage        Float
-  roundDate         DateTime @default(now())
-  User              User     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  Totaltime        Float?
+
+  id                             Int      @id @default(autoincrement())
+  userid                         Int
+  TestType                       TestType
+  questionattempted             Int
+  correctAnswer                 Int? @default(0)
+  TotalcorrectAnswerScore       Int?    //Here the number of question which are correct 
+  positiveAnswerScore          Int?    
+  wrongAnswerScore             Int?
+  percentage                  Float
+  roundDate                   DateTime @default(now())
+  User                        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  Totaltime                   Float?
+
 }
 
 enum TestType {
