@@ -6,8 +6,9 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu,Timer,Medal,ArrowRight } from 'lucide-react';
+import { GraduationCap, PlayCircle, Trophy, Lock, CheckCircle2, Brain, Code, Cpu,Timer,Medal,ArrowRight,PlusCircle,CheckSquare,MinusCircle } from 'lucide-react';
 import Link from 'next/link';
+
 
 // Updated rounds data with backend test type mapping
 const rounds = [
@@ -53,8 +54,12 @@ interface MarksData {
   [key: number]: TestScore;
 }
 
+
+
 export default function StudentDashboard() {
   const [completedRounds, setCompletedRounds] = useState<number[]>([]);
+  const [roundTimes, setRoundTimes] = useState<Record<number, string>>({});
+
   const [studentProfile, setStudentProfile] = useState<{
     name: string;
     email: string;
@@ -269,16 +274,19 @@ export default function StudentDashboard() {
         </Link>
       </div>
     </CardHeader>
-
     <CardContent>
       <div className="space-y-6">
         {rounds.map((round, index) => {
           const scoreData = marks[round.id];
-          const hasScore =
-            scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
-          const score = hasScore ? scoreData.correctAnswer : 0;
-          const total = hasScore ? scoreData.questionAttempted : 10;
-          const percentage = hasScore ? scoreData.percentage : 0;
+          const hasScore = scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
+          
+          const correctAnswers = hasScore ? (scoreData.correctAnswer ?? 0) : 0;
+          const questionAttempted = hasScore ? (scoreData.questionAttempted ?? 10) : 10;
+          const wrongAnswers = hasScore ? (questionAttempted - correctAnswers) : 0;
+          const positiveScore = correctAnswers * 5;  // 5 points for each correct answer
+          const negativeScore = wrongAnswers * 2;    // -2 points for each wrong answer
+          const totalScore = positiveScore - negativeScore;
+          const percentage = hasScore ? (scoreData.percentage ?? 0) : 0;
           const timeTaken = hasScore && scoreData.timeTaken ? scoreData.timeTaken : null;
 
           return (
@@ -287,47 +295,62 @@ export default function StudentDashboard() {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors"
+              className="p-6 rounded-lg bg-card hover:bg-accent/50 transition-colors border"
             >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">{round.name}</h3>
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-medium text-lg">{round.name}</h3>
                 <div className="text-right">
-                  {hasScore ? (
-                    <>
-                      <span className="text-lg font-semibold">
-                        {score}/{total}
-                      </span>
-                      <p className="text-sm text-muted-foreground">Completed</p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {scoreData?.message || 'Not attempted'}
-                    </p>
-                  )}
                   {timeTaken ? (
-                    <div className="flex items-center text-sm text-muted-foreground">
+                    <div className="flex items-center text-sm text-muted-foreground justify-end">
                       <Timer className="w-4 h-4 mr-1" />
                       Time: {formatTime(timeTaken)}
                     </div>
                   ) : (
                     <div className="text-sm text-muted-foreground">
-                      Not attempted
+                      Time: --:--
                     </div>
                   )}
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {hasScore ? 'Completed' : (scoreData?.message || 'Not attempted')}
+                  </p>
                 </div>
               </div>
 
-              <div className="w-full bg-secondary rounded-full h-2">
-                <div
-                  className="bg-primary rounded-full h-2 transition-all duration-500"
-                  style={{ width: `${percentage}%` }}
-                />
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="flex items-center space-x-2">
+                  <PlusCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm">Positive Score: </span>
+                  <span className="font-semibold text-green-500">+{positiveScore}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MinusCircle className="w-4 h-4 text-red-500" />
+                  <span className="text-sm">Negative Score: </span>
+                  <span className="font-semibold text-red-500">-{negativeScore}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckSquare className="w-4 h-4 text-primary" />
+                  <span className="text-sm">Correct Answers: </span>
+                  <span className="font-semibold">{correctAnswers}/{questionAttempted}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Trophy className="w-4 h-4 text-yellow-500" />
+                  <span className="text-sm">Total Score: </span>
+                  <span className="font-semibold">{totalScore}</span>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {hasScore
-                  ? `Score: ${percentage?.toFixed(1)}%`
-                  : 'No score available'}
-              </p>
+
+              <div className="space-y-2">
+                <div className="w-full bg-secondary rounded-full h-2">
+                  <div
+                    className="bg-primary rounded-full h-2 transition-all duration-500"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Score: {percentage?.toFixed(1)}%</span>
+                  <span>Max Score: {questionAttempted * 5}</span>
+                </div>
+              </div>
             </motion.div>
           );
         })}

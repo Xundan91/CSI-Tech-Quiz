@@ -159,50 +159,77 @@ export default function ExamPage() {
       });
       return;
     }
-
-    const calculatedScore = roundConfig.questions.reduce((acc, question) => {
+  
+    // Calculate scores based on answers
+    const totalQuestions = roundConfig.questions.length;
+    const answeredQuestions = Object.keys(answers).length;
+    
+    // Calculate correct answers and scores
+    const correctAnswers = roundConfig.questions.reduce((acc, question) => {
       if (answers[question.id] === question.correctAnswer) {
         return acc + 1;
       }
       return acc;
     }, 0);
-
-    setScore(calculatedScore);
-
+  
+    // Calculate positive and negative scores
+    const positiveScore = correctAnswers * 5; // +5 for each correct answer
+    const wrongAnswers = answeredQuestions - correctAnswers;
+    const negativeScore = wrongAnswers * 2; // -2 for each wrong answer
+    const totalScore = positiveScore - negativeScore;
+  
+    setScore(correctAnswers); // Update the score state for display
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error("Authentication token not found.");
       }
+  
       const totalTimeTaken = 45 * 60 - timeLeft;
-      const answerquestioncount = Object.keys(answers).length;
-
+  
       const requestData = {
         userid: userId,
-        questionattempted: answerquestioncount,
-        correctAnswer: calculatedScore,
+        questionattempted: answeredQuestions,
+        correctAnswer: correctAnswers,
         Totaltime: totalTimeTaken,
+        TotalcorrectAnswerScore: totalScore,
+        positiveAnswerScore: positiveScore,
+        wrongAnswerScore: negativeScore
       };
-
+  
+      // Determine which endpoint to use based on roundId
       const endpoints = [
         'https://csi-tech-quiz.onrender.com/api/user/aptitude',
         'https://csi-tech-quiz.onrender.com/api/user/advancedsa',
         'https://csi-tech-quiz.onrender.com/api/user/superadvancedsa',
       ];
-
+  
       const endpoint = endpoints[roundId - 1];
       if (!endpoint) throw new Error("Invalid round ID.");
-
+  
       const response = await axios.post(endpoint, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.status === 201) {
         localStorage.setItem(`examCompleted_${roundId}`, 'true');
         setExamCompleted(true);
+  
+        // Show score breakdown in toast
+        toast({
+          title: "Exam Submitted Successfully",
+          description: `
+            Total Questions: ${answeredQuestions}
+            Correct Answers: ${correctAnswers}
+            Wrong Answers: ${wrongAnswers}
+            Total Score: ${totalScore}
+          `,
+          duration: 5000,
+        });
       }
     } catch (error) {
       console.error("Error submitting exam:", error);
@@ -248,7 +275,8 @@ export default function ExamPage() {
                     <PartyPopper className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-lg mb-6">
-                    Your Score: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
+                    
+                    Your correct question: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
                   </p>
                   <Button 
                     size="lg"

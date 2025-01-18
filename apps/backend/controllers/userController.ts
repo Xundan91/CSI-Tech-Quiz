@@ -182,6 +182,8 @@ export const getUserTestDetails = async (req:any, res:any) => {
             TotalcorrectAnswerScore :test.TotalcorrectAnswerScore,
             positiveAnswerScore : test.positiveAnswerScore,
             wrongAnswerScore :test.wrongAnswerScore
+
+
           }
         : { TestType: type, message: 'No data available' };
     });
@@ -193,43 +195,47 @@ export const getUserTestDetails = async (req:any, res:any) => {
   }
 };
 
-// Controller function to fetch rankings
 export const getRankings = async (req: any, res: any) => {
   try {
-    // Fetch rankings for APTITUDE, DSA, and ADVANCEDSA
     const rankings = await prisma.testRound.findMany({
       where: {
         TestType: {
-          in: ['APTITUDE', 'DSA', 'ADVANCEDSA'], // Filter by test types
+          in: ['APTITUDE', 'DSA', 'ADVANCEDSA'], 
         },
       },
       orderBy: [
         {
-          roundDate: 'asc', // Sort by roundDate (oldest first)
+          roundDate: 'asc', 
         },
         {
-          TotalcorrectAnswerScore: 'desc', // If same roundDate, sort by TotalcorrectAnswerScore (highest first)
+          correctAnswer: 'desc', 
         },
         {
-          Totaltime: 'asc', // If same TotalcorrectAnswerScore, sort by Totaltime (least time first)
+          Totaltime: 'asc',
         },
       ],
       include: {
-        User: true, // Include User information for each test round
+        User: true, 
       },
     });
 
-    // Group the rankings by TestType
-    const groupedRankings = rankings.reduce((acc: any, round: any) => {
-      if (!acc[round.TestType]) {
-        acc[round.TestType] = [];
+    const groupedRankings: any = {};
+
+    rankings.forEach((round) => {
+      if (!groupedRankings[round.TestType]) {
+        groupedRankings[round.TestType] = {};
       }
-      acc[round.TestType].push(round);
+      if (!groupedRankings[round.TestType][round.userid]) {
+        groupedRankings[round.TestType][round.userid] = round;
+      }
+    });
+
+    const formattedRankings = Object.keys(groupedRankings).reduce((acc: any, testType: string) => {
+      acc[testType] = Object.values(groupedRankings[testType]);
       return acc;
     }, {});
 
-    // Return the rankings grouped by TestType
-    return res.status(200).json(groupedRankings);
+    return res.status(200).json(formattedRankings);
   } catch (error) {
     console.error('Error fetching rankings:', error);
     return res.status(500).json({ message: 'Error fetching rankings' });
