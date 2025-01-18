@@ -194,7 +194,6 @@ export const getUserTestDetails = async (req:any, res:any) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
 export const getRankings = async (req: any, res: any) => {
   try {
     const rankings = await prisma.testRound.findMany({
@@ -204,33 +203,36 @@ export const getRankings = async (req: any, res: any) => {
         },
       },
       orderBy: [
-        { TotalcorrectAnswerScore: 'desc' }, 
-        // { roundDate: 'asc' }, 
-        { Totaltime: 'asc' }, 
+        { TestType: 'asc' }, // Ensure grouping by TestType
+        { TotalcorrectAnswerScore: 'desc' }, // Higher scores first
+        { Totaltime: 'asc' }, // Shorter time if scores are tied
       ],
       include: {
         User: true,
       },
     });
 
-    const groupedRankings: any = {};
+    // Group rankings by TestType
+    const groupedRankings: Record<string, any[]> = {};
 
     rankings.forEach((round) => {
-      const { TestType, userid } = round;
+      const { TestType } = round;
 
       if (!groupedRankings[TestType]) {
-        groupedRankings[TestType] = {};
+        groupedRankings[TestType] = [];
       }
 
-      if (!groupedRankings[TestType][userid]) {
-        groupedRankings[TestType][userid] = round;
-      }
+      groupedRankings[TestType].push(round);
     });
 
-    const formattedRankings = Object.keys(groupedRankings).reduce((acc: any, testType: string) => {
-      acc[testType] = Object.values(groupedRankings[testType]); // Convert to array
-      return acc;
-    }, {});
+    // Format grouped rankings into an array
+    const formattedRankings = Object.entries(groupedRankings).reduce(
+      (acc: Record<string, any[]>, [testType, rounds]) => {
+        acc[testType] = rounds;
+        return acc;
+      },
+      {}
+    );
 
     return res.status(200).json(formattedRankings);
   } catch (error) {
