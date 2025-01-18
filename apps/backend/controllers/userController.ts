@@ -197,44 +197,50 @@ export const getUserTestDetails = async (req:any, res:any) => {
 
 export const getRankings = async (req: any, res: any) => {
   try {
+    // Fetch the oldest test rounds for APTITUDE, DSA, and ADVANCEDSA, ensuring only one per user per test type
     const rankings = await prisma.testRound.findMany({
       where: {
         TestType: {
-          in: ['APTITUDE', 'DSA', 'ADVANCEDSA'], 
+          in: ['APTITUDE', 'DSA', 'ADVANCEDSA'], // Filter by test types
         },
       },
       orderBy: [
         {
-          roundDate: 'asc', 
+          roundDate: 'asc', // Sort by roundDate (oldest first)
         },
         {
-          correctAnswer: 'desc', 
+          correctAnswer: 'desc', // If roundDate is the same, sort by correctAnswer (marks) in descending order
         },
         {
-          Totaltime: 'asc',
+          Totaltime: 'asc', // If correctAnswer is the same, sort by Totaltime (least time first)
         },
       ],
       include: {
-        User: true, 
+        User: true, // Include User information for each test round
       },
     });
 
+    // Reduce rankings to get only the first test round for each user per TestType (APTITUDE, DSA, ADVANCEDSA)
     const groupedRankings: any = {};
 
     rankings.forEach((round) => {
+      // If the user doesn't have a round for this TestType, add it
       if (!groupedRankings[round.TestType]) {
         groupedRankings[round.TestType] = {};
       }
+      // If this is the first round for this user, add it
       if (!groupedRankings[round.TestType][round.userid]) {
         groupedRankings[round.TestType][round.userid] = round;
       }
     });
 
+    // Convert grouped rankings into a structured response
     const formattedRankings = Object.keys(groupedRankings).reduce((acc: any, testType: string) => {
       acc[testType] = Object.values(groupedRankings[testType]);
       return acc;
     }, {});
 
+    // Return the rankings grouped by TestType
     return res.status(200).json(formattedRankings);
   } catch (error) {
     console.error('Error fetching rankings:', error);

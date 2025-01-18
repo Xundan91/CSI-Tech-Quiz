@@ -102,8 +102,8 @@ export default function RankingsPage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-2xl font-bold">{student.correctAnswer}/10</p>
-                            <p className="text-sm text-muted-foreground">Score: {(student.correctAnswer / 10) * 100}%</p>
+                            <p className="text-2xl font-bold">{student.TotalcorrectAnswerScore } Marks</p>
+                            {/* <p className="text-sm text-muted-foreground">Score: {(student.TotalcorrectAnswerScore / 10*5)}%</p> */}
                           </div>
                         </div>
                       </motion.div>
