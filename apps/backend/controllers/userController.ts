@@ -179,6 +179,9 @@ export const getUserTestDetails = async (req:any, res:any) => {
             correctAnswer: test.correctAnswer,
             percentage: test.percentage,
             timeTaken: test.Totaltime,
+            TotalcorrectAnswerScore :test.TotalcorrectAnswerScore,
+            positiveAnswerScore : test.positiveAnswerScore,
+            wrongAnswerScore :test.wrongAnswerScore
           }
         : { TestType: type, message: 'No data available' };
     });
