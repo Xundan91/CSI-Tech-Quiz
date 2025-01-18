@@ -204,8 +204,8 @@ export const getRankings = async (req: any, res: any) => {
         },
       },
       orderBy: [
-        { roundDate: 'asc' }, 
         { TotalcorrectAnswerScore: 'desc' }, 
+        // { roundDate: 'asc' }, 
         { Totaltime: 'asc' }, 
       ],
       include: {
