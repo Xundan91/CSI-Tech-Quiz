@@ -204,34 +204,31 @@ export const getRankings = async (req: any, res: any) => {
         },
       },
       orderBy: [
-        {
-          roundDate: 'asc',
-        },
-        {
-          TotalcorrectAnswerScore: 'desc', 
-        },
-        {
-          Totaltime: 'asc', 
-        },
+        { roundDate: 'asc' }, 
+        { TotalcorrectAnswerScore: 'desc' }, 
+        { Totaltime: 'asc' }, 
       ],
       include: {
-        User: true, 
+        User: true,
       },
     });
 
     const groupedRankings: any = {};
 
     rankings.forEach((round) => {
-      if (!groupedRankings[round.TestType]) {
-        groupedRankings[round.TestType] = {};
+      const { TestType, userid } = round;
+
+      if (!groupedRankings[TestType]) {
+        groupedRankings[TestType] = {};
       }
-      if (!groupedRankings[round.TestType][round.userid]) {
-        groupedRankings[round.TestType][round.userid] = round;
+
+      if (!groupedRankings[TestType][userid]) {
+        groupedRankings[TestType][userid] = round;
       }
     });
 
     const formattedRankings = Object.keys(groupedRankings).reduce((acc: any, testType: string) => {
-      acc[testType] = Object.values(groupedRankings[testType]);
+      acc[testType] = Object.values(groupedRankings[testType]); // Convert to array
       return acc;
     }, {});
 
