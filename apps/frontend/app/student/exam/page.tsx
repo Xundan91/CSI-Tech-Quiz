@@ -222,12 +222,6 @@ export default function ExamPage() {
         // Show score breakdown in toast
         toast({
           title: "Exam Submitted Successfully",
-          description: `
-            Total Questions: ${answeredQuestions}
-            Correct Answers: ${correctAnswers}
-            Wrong Answers: ${wrongAnswers}
-            Total Score: ${totalScore}
-          `,
           duration: 5000,
         });
       }

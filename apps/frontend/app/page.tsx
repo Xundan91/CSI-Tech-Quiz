@@ -21,6 +21,33 @@ export default function Home() {
     setIsLoading(true);
 
     try {
+      ///admin
+
+      const adminResponse = await fetch('https://csi-tech-quiz.onrender.com/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json();
+        // Store the admin token
+        localStorage.setItem('token', adminData.token);
+        window.location.href = '/admin';
+        return;
+      }else{
+        toast({
+          variant: 'destructive',
+          title: 'Login failed',
+          description: 'Invalid credentials. Please try again.',
+        });
+        setIsLoading(false);
+
+      }
+
+
       // User login API call
       const userResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/login', {
         method: 'POST',
