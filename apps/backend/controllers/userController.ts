@@ -205,10 +205,13 @@ export const getRankings = async (req: any, res: any) => {
       },
       orderBy: [
         {
-          correctAnswer: 'desc', // Sort by correctAnswer (marks) in descending order
+          roundDate: 'asc', // Sort by roundDate (oldest first)
         },
         {
-          Totaltime: 'asc', // If marks are the same, sort by Totaltime (time taken) in ascending order
+          TotalcorrectAnswerScore: 'desc', // If same roundDate, sort by TotalcorrectAnswerScore (highest first)
+        },
+        {
+          Totaltime: 'asc', // If same TotalcorrectAnswerScore, sort by Totaltime (least time first)
         },
       ],
       include: {
@@ -232,3 +235,4 @@ export const getRankings = async (req: any, res: any) => {
     return res.status(500).json({ message: 'Error fetching rankings' });
   }
 };
+
