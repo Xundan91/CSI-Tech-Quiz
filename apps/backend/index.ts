@@ -12,8 +12,20 @@ var bodyParser = require('body-parser')
 const app = express();
 
 app.use(express.json());
-const allowedOrigins = ['http://localhost:8081','http://localhost:8080','http://localhost:3000','http://localhost:3001', 'https://techo-pedia-csi.vercel.app','https://csi-tech-quiz.onrender.com'];
-app.use(cors({ origin: allowedOrigins }));
+const allowedOrigins = [
+  'http://localhost:8081', 
+  'http://localhost:8080', 
+  'http://localhost:3000', 
+  'http://localhost:3001', 
+  'https://techo-pedia-csi.vercel.app', 
+  'https://csi-tech-quiz.onrender.com'
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  credentials: true, 
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
