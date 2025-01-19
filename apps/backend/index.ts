@@ -16,7 +16,8 @@ const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001', 
   'https://techo-pedia-csi.vercel.app',
-  'https://csi-tech-quiz.onrender.com'
+  'https://csi-tech-quiz.onrender.com',
+  'https://13.200.3.175'
 ];
 
 app.use(cors({
