@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
 import { getCurrentUser,getUserTestDetails } from "../controllers/userController";
@@ -18,6 +18,38 @@ router.post('/superadvancedsa',authenticate,Superadvancedsa)
 router.get("/profile",authenticate, getCurrentUser);
 
 router.get('/rankings',authenticate, getRankings);
+
+interface UserInput {
+  name: string;
+  email: string;
+  password: string;
+}
+
+router.post("/signupall", async (req:any, res:any) => {
+  const users = req.body.users; // An array of user objects with name, email, and password
+
+  try {
+    // Hash passwords for all users
+    const hashedPasswords = await Promise.all(
+      users.map(async (user:UserInput) => {
+        return {
+          name: user.name,
+          email: user.email,
+          password: await hashPassword(user.password),
+        };
+      })
+    );
+
+    
+    const createdUsers = await prisma.user.createMany({
+      data: hashedPasswords,
+    });
+
+    res.json({ createdUsers });
+  } catch (err) {
+    console.error(err); // Log the full error to get more details
+    res.status(400).json({ error: "User creation failed", details: err });  }
+});
 
 
 router.post("/signup", async (req, res) => {

@@ -2,8 +2,6 @@ import express from "express";
 import routes from "./routes";
 import dotenv from "dotenv";
 import cors from "cors"
-import {WebSocket ,WebSocketServer  } from 'ws'
-import http from 'http'
 
 dotenv.config();
 var bodyParser = require('body-parser')
@@ -18,7 +16,8 @@ const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001', 
   'https://techo-pedia-csi.vercel.app', 
-  'https://csi-tech-quiz.onrender.com'
+  'https://csi-tech-quiz.onrender.com',
+  'http://3.108.63.218:8081'
 ];
 
 app.use(cors({
@@ -32,12 +31,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use("/api", routes);
- 
-const server = http.createServer(function(req, res){
-  res.end("server connnect")
+
+
+app.get("/",(req:any, res:any)=>{
+  res.status(200).json({
+    msg : "finnaly"
+  })
 })
-
-
 const PORT =  8080;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
