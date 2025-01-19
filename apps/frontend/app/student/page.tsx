@@ -132,34 +132,34 @@ export default function StudentDashboard() {
 
   ///only 1 round
 
-  const getRoundStatus = (roundId: number) => {
-    if (completedRounds.includes(roundId)) {
-      return 'completed';
-    }
-    if (roundId === 1) {
-      return 'available';
-    }
-    return 'locked';
-  };
-
-
-  ///////only round 1 and 2 
-
   // const getRoundStatus = (roundId: number) => {
   //   if (completedRounds.includes(roundId)) {
   //     return 'completed';
   //   }
-    
   //   if (roundId === 1) {
   //     return 'available';
   //   }
-    
-  //   if (roundId === 2 && completedRounds.includes(1)) {
-  //     return 'available';
-  //   }
-    
   //   return 'locked';
   // };
+
+
+  ///////only round 1 and 2 
+
+  const getRoundStatus = (roundId: number) => {
+    if (completedRounds.includes(roundId)) {
+      return 'completed';
+    }
+    
+    if (roundId === 1) {
+      return 'available';
+    }
+    
+    if (roundId === 2 && completedRounds.includes(1)) {
+      return 'available';
+    }
+    
+    return 'locked';
+  };
 
 
 
