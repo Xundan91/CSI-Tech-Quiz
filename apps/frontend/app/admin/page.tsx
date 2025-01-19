@@ -98,7 +98,7 @@ export default function AdminDashboard() {
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="APTITUDE">Aptitude</TabsTrigger>
                   <TabsTrigger value="DSA">DSA</TabsTrigger>
-                  <TabsTrigger value="ADVANCEDSA">Advanced DSA</TabsTrigger>
+                  <TabsTrigger value="ADVANCEDSA">Surprise</TabsTrigger>
                 </TabsList>
                 {['APTITUDE', 'DSA', 'ADVANCEDSA'].map((testType) => {
                   const RoundIcon = roundIcons[testType];

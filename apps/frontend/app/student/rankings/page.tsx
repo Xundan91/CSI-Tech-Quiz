@@ -87,7 +87,7 @@ export default function RankingsPage() {
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="APTITUDE">Aptitude</TabsTrigger>
                 <TabsTrigger value="DSA">DSA</TabsTrigger>
-                <TabsTrigger value="ADVANCEDSA">Advanced Concepts</TabsTrigger>
+                <TabsTrigger value="ADVANCEDSA">Surprise </TabsTrigger>
               </TabsList>
               {['APTITUDE', 'DSA', 'ADVANCEDSA'].map((testType) => (
                 <TabsContent key={testType} value={testType}>

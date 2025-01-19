@@ -60,7 +60,7 @@ export default function ExamPage() {
 
   const [roundStarted, setRoundStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeLeft, setTimeLeft] = useState(45 * 60);
+  const [timeLeft, setTimeLeft] = useState(roundConfig.timeLimit * 60);
   const [examCompleted, setExamCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
