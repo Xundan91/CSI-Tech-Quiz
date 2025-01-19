@@ -132,34 +132,34 @@ export default function StudentDashboard() {
 
   ///only 1 round
 
-  const getRoundStatus = (roundId: number) => {
-    if (completedRounds.includes(roundId)) {
-      return 'completed';
-    }
-    if (roundId === 1) {
-      return 'available';
-    }
-    return 'locked';
-  };
-
-
-  ///////only round 1 and 2 
-
   // const getRoundStatus = (roundId: number) => {
   //   if (completedRounds.includes(roundId)) {
   //     return 'completed';
   //   }
-    
   //   if (roundId === 1) {
   //     return 'available';
   //   }
-    
-  //   if (roundId === 2 && completedRounds.includes(1)) {
-  //     return 'available';
-  //   }
-    
   //   return 'locked';
   // };
+
+
+  ///////only round 1 and 2 
+
+  const getRoundStatus = (roundId: number) => {
+    if (completedRounds.includes(roundId)) {
+      return 'completed';
+    }
+    
+    if (roundId === 1) {
+      return 'available';
+    }
+    
+    if (roundId === 2 && completedRounds.includes(1)) {
+      return 'available';
+    }
+    
+    return 'locked';
+  };
 
 
 
@@ -325,7 +325,7 @@ export default function StudentDashboard() {
   const positiveScore = correctAnswers * 5;  // 5 points for each correct answer
   const negativeScore = wrongAnswers * 2;    // -2 points for each wrong answer
   const totalScore = positiveScore - negativeScore;
-  
+
   const percentage = hasScore ? (totalScore / maxScore * 100) : 0;
 
   const timeTaken = hasScore && scoreData.timeTaken ? scoreData.timeTaken : null;
