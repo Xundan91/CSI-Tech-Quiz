@@ -1,49 +1,47 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { GraduationCap, Users, Award } from 'lucide-react';
+import { Users, Timer, Trophy, Brain, Code, Cpu } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Mock exam results data
-const examResults = [
-  { 
-    id: 1,
-    studentName: 'John Doe',
-    email: 'john@example.com',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop',
-    rounds: [
-      { round: 1, score: 85, totalQuestions: 10, timeTaken: '25:30' },
-      { round: 2, status: 'Locked' },
-      { round: 3, status: 'Locked' }
-    ]
-  },
-  {
-    id: 2,
-    studentName: 'Jane Smith',
-    email: 'jane@example.com',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop',
-    rounds: [
-      { round: 1, score: 90, totalQuestions: 10, timeTaken: '22:15' },
-      { round: 2, status: 'Locked' },
-      { round: 3, status: 'Locked' }
-    ]
-  },
-  {
-    id: 3,
-    studentName: 'Mike Johnson',
-    email: 'mike@example.com',
-    avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop',
-    rounds: [
-      { round: 1, score: 75, totalQuestions: 10, timeTaken: '28:45' },
-      { round: 2, status: 'Locked' },
-      { round: 3, status: 'Locked' }
-    ]
-  },
-];
+const roundIcons: Record<string, React.FC<any>> = {
+  'APTITUDE': Brain,
+  'DSA': Code,
+  'ADVANCEDSA': Cpu,
+};
+
+const rankColors: Record<1 | 2 | 3, string> = {
+  1: 'text-yellow-500 font-bold',
+  2: 'text-gray-400 font-bold',
+  3: 'text-amber-600 font-bold',
+};
 
 export default function AdminDashboard() {
+  const [rankings, setRankings] = useState<any>({});
+  const [selectedTab, setSelectedTab] = useState('APTITUDE');
+
+  useEffect(() => {
+    const fetchRankings = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://csi-tech-quiz.onrender.com/api/user/rankings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setRankings(data);
+      } catch (error) {
+        console.error('Error fetching rankings:', error);
+      }
+    };
+
+    fetchRankings();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background p-8">
       <motion.div
@@ -58,112 +56,72 @@ export default function AdminDashboard() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <GraduationCap className="mr-2" /> Exam Results Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[600px] pr-4">
-                  <div className="space-y-6">
-                    {examResults.map((student, index) => (
-                      <motion.div
-                        key={student.id}
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <Card>
-                          <CardContent className="pt-6">
-                            <div className="flex items-center space-x-4 mb-4">
-                              <Avatar>
-                                <AvatarImage src={student.avatar} alt={student.studentName} />
-                                <AvatarFallback>{student.studentName.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <h3 className="font-medium">{student.studentName}</h3>
-                                <p className="text-sm text-muted-foreground">{student.email}</p>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Trophy className="mr-2" /> Top Performers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="APTITUDE">Aptitude</TabsTrigger>
+                  <TabsTrigger value="DSA">DSA</TabsTrigger>
+                  <TabsTrigger value="ADVANCEDSA">Advanced DSA</TabsTrigger>
+                </TabsList>
+                {['APTITUDE', 'DSA', 'ADVANCEDSA'].map((roundName) => {
+                  const RoundIcon = roundIcons[roundName];
+                  return (
+                    <TabsContent key={roundName} value={roundName}>
+                      <div className="space-y-4">
+                        {rankings[roundName]?.map((student: any, index: number) => (
+                          <motion.div
+                            key={student.id}
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors border"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <div className={`text-2xl font-bold min-w-[2rem] ${
+                                  rankColors[(index + 1) as 1 | 2 | 3] || 'text-muted-foreground'
+                                }`}>
+                                  #{index + 1}
+                                </div>
+                                <Avatar>
+                                  <AvatarImage src={student.User.avatar || ''} alt={student.User.name} />
+                                  <AvatarFallback>{student.User.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium">{student.User.name}</p>
+                                  <div className="flex items-center text-sm text-muted-foreground">
+                                    <Timer className="w-4 h-4 mr-1" />
+                                    Time: {student.Totaltime ? 
+                                      `${Math.floor(student.Totaltime / 60)}:${String(student.Totaltime % 60).padStart(2, '0')}` 
+                                      : 'N/A'}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold">{student.TotalcorrectAnswerScore} Marks</p>
                               </div>
                             </div>
-                            
-                            <div className="space-y-4">
-                              {student.rounds.map((round) => (
-                                <div 
-                                  key={round.round}
-                                  className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <Award className="w-4 h-4" />
-                                    <span>Round {round.round}</span>
-                                  </div>
-                                  {round.score ? (
-                                    <div className="text-right">
-                                      <div className="font-medium">
-                                        Score: {round.score}/{round.totalQuestions}
-                                      </div>
-                                      <div className="text-sm text-muted-foreground">
-                                        Time: {round.timeTaken}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <span className="text-muted-foreground">
-                                      {round.status}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>Statistics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-primary/10 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Total Students</p>
-                      <p className="text-2xl font-bold">{examResults.length}</p>
-                    </div>
-                    <div className="p-4 bg-primary/10 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Average Score</p>
-                      <p className="text-2xl font-bold">83.3%</p>
-                    </div>
-                    <div className="p-4 bg-primary/10 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Completed Exams</p>
-                      <p className="text-2xl font-bold">3</p>
-                    </div>
-                    <div className="p-4 bg-primary/10 rounded-lg">
-                      <p className="text-sm text-muted-foreground">Pending Rounds</p>
-                      <p className="text-2xl font-bold">2</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  );
+                })}
+              </Tabs>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -194,49 +194,52 @@ export const getUserTestDetails = async (req:any, res:any) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+
 export const getRankings = async (req: any, res: any) => {
   try {
-    const rankings = await prisma.testRound.findMany({
+    // Fetch only the top user from each round
+    const rankings = await prisma.testRound.groupBy({
+      by: ['TestType', 'UserId'], // Group by TestType and UserId
       where: {
         TestType: {
           in: ['APTITUDE', 'DSA', 'ADVANCEDSA'],
         },
       },
+      _max: {
+        TotalcorrectAnswerScore: true, // Get max correct score
+      },
+      _min: {
+        Totaltime: true, // Get shortest time if scores are tied
+      },
       orderBy: [
         { TestType: 'asc' }, // Ensure grouping by TestType
-        { TotalcorrectAnswerScore: 'desc' }, // Higher scores first
-        { Totaltime: 'asc' }, // Shorter time if scores are tied
+        { _max: { TotalcorrectAnswerScore: 'desc' } }, // Higher scores first
+        { _min: { Totaltime: 'asc' } }, // Shorter time if scores are tied
       ],
-      include: {
-        User: true,
-      },
     });
 
-    // Group rankings by TestType
-    const groupedRankings: Record<string, any[]> = {};
+    // Fetch user details for the grouped results
+    const userRankings = await Promise.all(
+      rankings.map(async (group) => {
+        const user = await prisma.user.findUnique({
+          where: { id: group.UserId },
+        });
 
-    rankings.forEach((round) => {
-      const { TestType } = round;
-
-      if (!groupedRankings[TestType]) {
-        groupedRankings[TestType] = [];
-      }
-
-      groupedRankings[TestType].push(round);
-    });
-
-    // Format grouped rankings into an array
-    const formattedRankings = Object.entries(groupedRankings).reduce(
-      (acc: Record<string, any[]>, [testType, rounds]) => {
-        acc[testType] = rounds;
-        return acc;
-      },
-      {}
+        return {
+          TestType: group.TestType,
+          User: user,
+          Score: group._max.TotalcorrectAnswerScore,
+          Time: group._min.Totaltime,
+        };
+      })
     );
 
-    return res.status(200).json(formattedRankings);
+    return res.status(200).json(userRankings);
   } catch (error) {
     console.error('Error fetching rankings:', error);
     return res.status(500).json({ message: 'Error fetching rankings' });
   }
 };
+
