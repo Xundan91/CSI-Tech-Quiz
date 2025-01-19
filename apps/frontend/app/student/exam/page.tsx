@@ -73,7 +73,7 @@ export default function ExamPage() {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
+        const response = await axios.get('http://3.108.63.218:8081/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
