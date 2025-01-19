@@ -196,12 +196,11 @@ export const getUserTestDetails = async (req:any, res:any) => {
 };
 
 
-
 export const getRankings = async (req: any, res: any) => {
   try {
     // Fetch only the top user from each round
     const rankings = await prisma.testRound.groupBy({
-      by: ['TestType', 'UserId'], // Group by TestType and UserId
+      by: ['TestType', 'userid'], // Use 'userid' if that matches your schema
       where: {
         TestType: {
           in: ['APTITUDE', 'DSA', 'ADVANCEDSA'],
@@ -213,18 +212,13 @@ export const getRankings = async (req: any, res: any) => {
       _min: {
         Totaltime: true, // Get shortest time if scores are tied
       },
-      orderBy: [
-        { TestType: 'asc' }, // Ensure grouping by TestType
-        { _max: { TotalcorrectAnswerScore: 'desc' } }, // Higher scores first
-        { _min: { Totaltime: 'asc' } }, // Shorter time if scores are tied
-      ],
     });
 
     // Fetch user details for the grouped results
     const userRankings = await Promise.all(
       rankings.map(async (group) => {
         const user = await prisma.user.findUnique({
-          where: { id: group.UserId },
+          where: { id: group.userid }, // Ensure 'userid' matches your schema
         });
 
         return {
@@ -242,4 +236,5 @@ export const getRankings = async (req: any, res: any) => {
     return res.status(500).json({ message: 'Error fetching rankings' });
   }
 };
+
 
