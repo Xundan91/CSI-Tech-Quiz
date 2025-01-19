@@ -8,7 +8,7 @@ export interface Question {
 interface RoundConfig {
   title: string;
   description: string;
-  timeLimit: number; // in minutes
+  timeLimit: number; 
   questions: Question[];
 }
 

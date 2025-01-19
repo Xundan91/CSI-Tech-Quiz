@@ -20,7 +20,7 @@ const rankColors: Record<1 | 2 | 3, string> = {
 };
 
 export default function AdminDashboard() {
-  const [rankings, setRankings] = useState<any>({});
+  const [rankings, setRankings] = useState<Record<string, any[]>>({});
   const [selectedTab, setSelectedTab] = useState('APTITUDE');
 
   useEffect(() => {
@@ -33,7 +33,27 @@ export default function AdminDashboard() {
           },
         });
         const data = await response.json();
-        setRankings(data);
+        
+        // Group and sort the data by TestType, Score, and Time
+        const groupedData = data.reduce((acc: Record<string, any[]>, item: any) => {
+          if (!acc[item.TestType]) {
+            acc[item.TestType] = [];
+          }
+          acc[item.TestType].push(item);
+          return acc;
+        }, {});
+
+        // Sort each group by Score (descending) and Time (ascending)
+        Object.keys(groupedData).forEach(testType => {
+          groupedData[testType].sort((a:any, b:any) => {
+            if (b.Score !== a.Score) {
+              return b.Score - a.Score;
+            }
+            return a.Time - b.Time;
+          });
+        });
+
+        setRankings(groupedData);
       } catch (error) {
         console.error('Error fetching rankings:', error);
       }
@@ -41,6 +61,12 @@ export default function AdminDashboard() {
 
     fetchRankings();
   }, []);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+  };
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -74,14 +100,14 @@ export default function AdminDashboard() {
                   <TabsTrigger value="DSA">DSA</TabsTrigger>
                   <TabsTrigger value="ADVANCEDSA">Advanced DSA</TabsTrigger>
                 </TabsList>
-                {['APTITUDE', 'DSA', 'ADVANCEDSA'].map((roundName) => {
-                  const RoundIcon = roundIcons[roundName];
+                {['APTITUDE', 'DSA', 'ADVANCEDSA'].map((testType) => {
+                  const RoundIcon = roundIcons[testType];
                   return (
-                    <TabsContent key={roundName} value={roundName}>
+                    <TabsContent key={testType} value={testType}>
                       <div className="space-y-4">
-                        {rankings[roundName]?.map((student: any, index: number) => (
+                        {rankings[testType]?.map((student, index) => (
                           <motion.div
-                            key={student.id}
+                            key={student.User.id}
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: index * 0.1 }}
@@ -95,21 +121,18 @@ export default function AdminDashboard() {
                                   #{index + 1}
                                 </div>
                                 <Avatar>
-                                  <AvatarImage src={student.User.avatar || ''} alt={student.User.name} />
                                   <AvatarFallback>{student.User.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>
                                   <p className="font-medium">{student.User.name}</p>
                                   <div className="flex items-center text-sm text-muted-foreground">
                                     <Timer className="w-4 h-4 mr-1" />
-                                    Time: {student.Totaltime ? 
-                                      `${Math.floor(student.Totaltime / 60)}:${String(student.Totaltime % 60).padStart(2, '0')}` 
-                                      : 'N/A'}
+                                    Time: {formatTime(student.Time)}
                                   </div>
                                 </div>
                               </div>
                               <div className="text-right">
-                                <p className="text-2xl font-bold">{student.TotalcorrectAnswerScore} Marks</p>
+                                <p className="text-2xl font-bold">{student.Score} Marks</p>
                               </div>
                             </div>
                           </motion.div>
