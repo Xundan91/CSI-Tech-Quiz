@@ -23,7 +23,7 @@ export default function Home() {
     try {
       ///admin
 
-      const adminResponse = await fetch('http://3.108.63.218:8081/api/admin/login', {
+      const adminResponse = await fetch('https://csi-tech-quiz.onrender.com/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export default function Home() {
 
 
       // User login API call
-      const userResponse = await fetch('http://3.108.63.218:8081/api/user/login', {
+      const userResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
