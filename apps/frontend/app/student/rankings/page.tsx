@@ -19,7 +19,7 @@ export default function RankingsPage() {
       try {
         const token = localStorage.getItem('token');
 
-        const response = await fetch('https://csi-tech-quiz.onrender.com/api/user/rankings', {
+        const response = await fetch('http://3.108.63.218:8081/api/user/rankings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
