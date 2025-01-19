@@ -118,15 +118,50 @@ export default function StudentDashboard() {
     fetchProfileAndMarks();
   }, []);
 
+ ///all round show
+  // const getRoundStatus = (roundId: number) => {
+  //   if (completedRounds.includes(roundId)) {
+  //     return 'completed';
+  //   }
+  //   if (roundId === 1 || completedRounds.includes(roundId - 1)) {
+  //     return 'available';
+  //   }
+  //   return 'locked';
+  // };
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  ///only 1 round
+
   const getRoundStatus = (roundId: number) => {
     if (completedRounds.includes(roundId)) {
       return 'completed';
     }
-    if (roundId === 1 || completedRounds.includes(roundId - 1)) {
+    if (roundId === 1) {
       return 'available';
     }
     return 'locked';
   };
+
+
+  ///////only round 1 and 2 
+
+  // const getRoundStatus = (roundId: number) => {
+  //   if (completedRounds.includes(roundId)) {
+  //     return 'completed';
+  //   }
+    
+  //   if (roundId === 1) {
+  //     return 'available';
+  //   }
+    
+  //   if (roundId === 2 && completedRounds.includes(1)) {
+  //     return 'available';
+  //   }
+    
+  //   return 'locked';
+  // };
+
+
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
