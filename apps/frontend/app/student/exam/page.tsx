@@ -10,16 +10,16 @@ import { useToast } from '@/hooks/use-toast';
 import { roundConfigs } from './questions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import Image from 'next/image';
+
 interface ConfirmationDialogProps {
   isOpen: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-// Confirmation Dialog Component with TypeScript props
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onConfirm, onCancel }) => {
   if (!isOpen) return null;
-
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -49,8 +49,6 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({ isOpen, onConfi
     </div>
   );
 };
-
-
 
 export default function ExamPage() {
   const router = useRouter();
@@ -139,13 +137,25 @@ export default function ExamPage() {
   }, [examCompleted]);
 
   const handleAnswer = (questionId: number, answer: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: answer,
-    }));
+    setAnswers((prev) => {
+      // If the selected answer is the same as the current answer, remove it
+      if (prev[questionId] === answer) {
+        const newAnswers = { ...prev };
+        delete newAnswers[questionId];
+        return newAnswers;
+      }
+      // Otherwise, set the new answer
+      return {
+        ...prev,
+        [questionId]: answer,
+      };
+    });
   };
 
-  // Modified submission handling
+  const handleOptionClick = (questionId: number, option: string) => {
+    handleAnswer(questionId, option);
+  };
+
   const handleSubmit = () => {
     setShowConfirmation(true);
   };
@@ -159,35 +169,32 @@ export default function ExamPage() {
       });
       return;
     }
-  
-    // Calculate scores based on answers
+
     const totalQuestions = roundConfig.questions.length;
     const answeredQuestions = Object.keys(answers).length;
     
-    // Calculate correct answers and scores
     const correctAnswers = roundConfig.questions.reduce((acc, question) => {
       if (answers[question.id] === question.correctAnswer) {
         return acc + 1;
       }
       return acc;
     }, 0);
-  
-    // Calculate positive and negative scores
-    const positiveScore = correctAnswers * 5; // +5 for each correct answer
+
+    const positiveScore = correctAnswers * 5;
     const wrongAnswers = answeredQuestions - correctAnswers;
-    const negativeScore = wrongAnswers * 2; // -2 for each wrong answer
+    const negativeScore = wrongAnswers * 2;
     const totalScore = positiveScore - negativeScore;
-  
-    setScore(correctAnswers); // Update the score state for display
-  
+
+    setScore(correctAnswers);
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error("Authentication token not found.");
       }
-  
+
       const totalTimeTaken = 45 * 60 - timeLeft;
-  
+
       const requestData = {
         userid: userId,
         questionattempted: answeredQuestions,
@@ -197,29 +204,27 @@ export default function ExamPage() {
         positiveAnswerScore: positiveScore,
         wrongAnswerScore: negativeScore
       };
-  
-      // Determine which endpoint to use based on roundId
+
       const endpoints = [
         'https://csi-tech-quiz.onrender.com/api/user/aptitude',
         'https://csi-tech-quiz.onrender.com/api/user/advancedsa',
         'https://csi-tech-quiz.onrender.com/api/user/superadvancedsa',
       ];
-  
+
       const endpoint = endpoints[roundId - 1];
       if (!endpoint) throw new Error("Invalid round ID.");
-  
+
       const response = await axios.post(endpoint, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.status === 201) {
         localStorage.setItem(`examCompleted_${roundId}`, 'true');
         setExamCompleted(true);
-  
-        // Show score breakdown in toast
+
         toast({
           title: "Exam Submitted Successfully",
           duration: 5000,
@@ -269,7 +274,6 @@ export default function ExamPage() {
                     <PartyPopper className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-lg mb-6">
-                    
                     Your correct question: <span className="font-bold">{score}</span> out of {roundConfig.questions.length}
                   </p>
                   <Button 
@@ -318,22 +322,47 @@ export default function ExamPage() {
             >
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="text-lg font-medium mb-4">
-                    {index + 1}. {question.question}
-                  </h3>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">
+                      {index + 1}. {question.question}
+                    </h3>
 
-                  <RadioGroup
-                    value={answers[question.id]}
-                    onValueChange={(value) => handleAnswer(question.id, value)}
-                    className="space-y-3"
-                  >
-                    {question.options.map((option, optionIndex) => (
-                      <div key={optionIndex} className="flex items-center space-x-2">
-                        <RadioGroupItem value={option} id={`q${question.id}-option-${optionIndex}`} />
-                        <Label htmlFor={`q${question.id}-option-${optionIndex}`}>{option}</Label>
+                    {question.image && (
+                      <div className="relative w-full h-64 rounded-lg overflow-hidden">
+                        <Image
+                          src={question.image}
+                          alt={`Question ${index + 1} illustration`}
+                          fill
+                          className="object-contain"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority={index < 2}
+                        />
                       </div>
-                    ))}
-                  </RadioGroup>
+                    )}
+
+                    <div className="space-y-3 mt-4">
+                      {question.options.map((option, optionIndex) => (
+                        <div 
+                          key={optionIndex} 
+                          className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent cursor-pointer"
+                          onClick={() => handleOptionClick(question.id, option)}
+                        >
+                          <div 
+                            className={`w-4 h-4 rounded-full border border-primary flex items-center justify-center ${
+                              answers[question.id] === option ? 'bg-primary' : 'bg-background'
+                            }`}
+                          >
+                            {answers[question.id] === option && (
+                              <div className="w-2 h-2 rounded-full bg-background" />
+                            )}
+                          </div>
+                          <span className="cursor-pointer select-none">
+                            {option}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -357,8 +386,7 @@ export default function ExamPage() {
               </Button>
               {Object.keys(answers).length !== roundConfig.questions.length && (
                 <p className="text-sm text-muted-foreground text-center mt-2 flex items-center justify-center">
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  Please answer all questions before submitting
+                  
                 </p>
               )}
             </CardContent>

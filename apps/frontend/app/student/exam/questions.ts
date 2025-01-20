@@ -3,6 +3,8 @@ export interface Question {
   question: string;
   options: string[];
   correctAnswer: string;
+  image?: string; // Optional image URL
+
 }
 
 interface RoundConfig {
@@ -514,114 +516,393 @@ export const roundConfigs: Record<number, RoundConfig> = {
     questions: [
       {
         id: 1,
-        question: "What is the difference between process and thread?",
+        question: "The function maxReplace print space separated integers representing the input list after replacing all the elements of the input list with the sum of all the element of the input list. The function maxReplace accepts two arguments – size  an integer representing the size of the input list and inputList, a list of integers representing the input list respectively. The function maxReplace compiles unsuccessfully due to compilation errors. Your task is to fix the code so that it passes all the test cases.",
         options: [
-          "Processes share memory, threads don't",
-          "Threads share memory, processes don't",
-          "There is no difference",
-          "Threads are faster than processes"
+          "inputList[i]=sum;",
+          "inputList[i]=size; ",
+          "size=inputList[i]",
+          "sum+=inputList[i];"
         ],
-        correctAnswer: "Threads share memory, processes don't"
+        correctAnswer: "Threads share memory, processes don't",
+        image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question1.png"
       },
       {
         id: 2,
-        question: "Which pattern is best for handling multiple similar events?",
+        question: `Ram is a 6 years old boy who loves to play with numeric lego. One day ram’s mom 
+created a number using those lego and asked ram to tell the number of elements 
+available between two specific numbers ‘alpha1’ and ‘alpha2’. After 15 years when 
+ram started learning C, he now wants to write a C code to find the number of 
+elements lies between ranges alpha1 and alpha2. If the number is arr and the 
+starting and ending points are alpha1 and alpha2, find the numbers of elements lies 
+in the range 
+Input: 
+Three space-separated integers 
+1. First is the length of arr. 
+2. Second is the starting point as alpha1 
+3. The third is the endpoint as alpha2 
+Output: 
+Indexes of elements lie between this range. 
+Example 
+Input 
+9 2 6 
+1 2 3 4 5 6 7 8 9 
+Output 
+1 2 3 4 
+Find the error in the given code –`,
         options: [
-          "Factory Pattern",
-          "Observer Pattern",
-          "Singleton Pattern",
-          "Builder Pattern"
+          "for(j=0; j<=length; j++)",
+          "for(j=0;j<length;j++) ",
+          `printf("%d ",j); `,
+          "No Error"
         ],
-        correctAnswer: "Observer Pattern"
+        correctAnswer: "for(j=0; j<=length; j++)",
+        image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question2.png"
       },
       {
         id: 3,
-        question: "What is the purpose of virtual memory?",
+        question: `Function/method employeeID accepts four arguments-len , an integer representing 
+the length of input list. arr, start , end of range and a list of integers It returns an 
+integer representing the sum of all id’s of the employees in that range for example   
+len = 6,start=30,end=50, arr = [29 38 12 48 39 55] 
+function /method will return 8 i.e 1+3+4. Function/method compiles successfully but 
+fails to return the desired result for some/all cases due to incorrect implementation. 
+Your task is to debug the code so that it passes all test cases. 
+Example 
+Input 
+6 30 50 
+29 38 12 48 39 55 
+Output 
+8 
+Find error in the following code `,
         options: [
-          "To increase RAM speed",
-          "To extend physical memory using disk space",
-          "To compress memory",
-          "To encrypt memory"
+          "for (i = 0; i < len; i++)  ",
+          "if (arr[i] > start || arr[i] < end)",
+          "Both A and B",
+          "if (flag == -1)"
         ],
-        correctAnswer: "To extend physical memory using disk space"
+        correctAnswer: "if (arr[i] > start || arr[i] < end)",
+        image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question3.png"
       },
       {
         id: 4,
-        question: "Which sorting algorithm has the best average case performance?",
+        question: `Function/method nthFib accepts single argument-num , an integer representing 
+number. for example  num=9 
+function /method will return 34 function/method compiles successfully but fails to 
+return the desired result for some/all cases due to incorrect implementation. Your 
+task is to debug the code so that it passes all test cases. 
+Example 
+Input 
+8 
+Output 
+21 
+`,
         options: [
-          "Bubble Sort",
-          "Quick Sort",
-          "Selection Sort",
-          "Insertion Sort"
+          "for (i = 0; i <= num; i++) ",
+          "c = a + b",
+          "return a + b",
+          "Both A and C"
         ],
-        correctAnswer: "Quick Sort"
+        correctAnswer: "Both A and C",
+        image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question4.png"
       },
       {
         id: 5,
-        question: "What is the main advantage of using microservices architecture?",
+        question: `The function mulTable(int num) is supposed to print the first twenty multiples of the 
+multiplication table of the input number num     .  
+The function compiles fine but fails to return the desired result for some cases. 
+Your task is to fix the program so that it passes all the test cases. 
+Test cases: 
+TestCase 1: 
+Input: 
+6 
+Expected return value: 
+6  12  18  24  30  36  42  48  57  60 66 72 78 84 90 96 102 108 114 120 
+No of Lines you will change in the following code to fix it:`,
         options: [
-          "Easier deployment",
-          "Better scalability and flexibility",
-          "Lower cost",
-          "Simpler development"
+          "0",
+          "1",
+          "2",
+          "3"
         ],
-        correctAnswer: "Better scalability and flexibility"
+        correctAnswer: "2",
+        image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question5.png"
       },
       {
-        id: 6,
-        question: "What is a closure in programming?",
-        options: [
-          "A way to close applications",
-          "A function that has access to variables in its outer scope",
-          "A method to close database connections",
-          "A type of loop"
+        "id": 6,
+        "question": "A merchant can buy goods at the rate of Rs. 20 per good. The particular good is part of an overall collection and the value is linked to the number of items that are already on the market. So, the merchant sells the first good for Rs. 2, second one for Rs. 4, third for Rs. 6…and so on. If he wants to make an overall profit of at least 40%, what is the minimum number of goods he should sell?",
+        "options": [
+          "24",
+          "18",
+          "27",
+          "32"
         ],
-        correctAnswer: "A function that has access to variables in its outer scope"
+        "correctAnswer": "27",
       },
       {
-        id: 7,
-        question: "What is the CAP theorem in distributed systems?",
-        options: [
-          "Consistency, Availability, Partition tolerance",
-          "Capacity, Automation, Performance",
-          "Control, Access, Protection",
-          "Cache, API, Protocol"
+        "id": 7,
+        "question": "P is x% more than Q. Q is (x - 10)% less than R. If P > R, what is the range of values x can take?",
+        "options": [
+          "10%-28%",
+          "10%-25%",
+          "10%-37%",
+          "10%-43%"
         ],
-        correctAnswer: "Consistency, Availability, Partition tolerance"
+        "correctAnswer": "10%-37%",
       },
       {
-        id: 8,
-        question: "Which protocol is used in blockchain for consensus?",
-        options: [
-          "HTTP",
-          "TCP/IP",
-          "Proof of Work",
-          "REST"
+        "id": 8,
+        "question": "In a class, if 50% of the boys were girls, then there would be 50% more girls than boys. What percentage of the overall class is girls?",
+        "options": [
+          "50",
+          "20",
+          "33",
+          "25"
         ],
-        correctAnswer: "Proof of Work"
+        "correctAnswer": "20",
       },
       {
-        id: 9,
-        question: "What is the purpose of dependency injection?",
-        options: [
-          "To increase application speed",
-          "To reduce code coupling",
-          "To compress code",
-          "To encrypt data"
+        "id": 9,
+        "question": "Traders A and B buy two goods for Rs. 1000 and Rs. 2000 respectively. Trader A marks his goods up by x%, while trader B marks his goods up by 2x% and offers a discount of x%. If both make the same non-zero profit, find x.",
+        "options": [
+          "25",
+          "12.5",
+          "37.5",
+          "40"
         ],
-        correctAnswer: "To reduce code coupling"
+        "correctAnswer": "25",
       },
       {
-        id: 10,
-        question: "What is the difference between REST and GraphQL?",
-        options: [
-          "REST is newer than GraphQL",
-          "GraphQL allows clients to request specific data",
-          "REST is more secure",
-          "GraphQL is only for databases"
+        "id": 10,
+        "question": "A merchant buys 80 articles, each at Rs. 40. He sells n of them at a profit of n% and the remaining at a profit of (100 – n)%. What is the minimum profit the merchant could have made on this trade?",
+        "options": [
+          "2160",
+          "1420",
+          "1580",
+          "2210"
         ],
-        correctAnswer: "GraphQL allows clients to request specific data"
+        "correctAnswer": "1580",
+      },
+      {
+        "id": 11,
+        "question": "You are working as an SDE in an MNC, tasked with designing a database for a software product. The data is not in a tabular/structured manner and requires high adaptability. Which database would you choose?",
+        "options": [
+          "MySQL",
+          "PostgreSQL",
+          "MongoDB",
+          "SQLite"
+        ],
+        "correctAnswer": "MongoDB"
+      },
+      {
+        "id": 12,
+        "question": "Your team is building a real-time analytics platform to process and visualize streaming data from IoT devices. The system requires minimal latency and the ability to handle large-scale, time-series data efficiently. Which database would you recommend?",
+        "options": [
+          "Cassandra",
+          "MySQL",
+          "MongoDB",
+          "InfluxDB"
+        ],
+        "correctAnswer": "InfluxDB"
+      },
+      {
+        "id": 13,
+        "question": "A large team of developers is working on a software project. They require a system to collaborate on code, maintain a history of changes, and handle branching/merging efficiently. Which tool would you choose?",
+        "options": [
+          "Git",
+          "SVN",
+          "Mercurial",
+          "CVS"
+        ],
+        "correctAnswer": "Git"
+      },
+      {
+        "id": 14,
+        "question": "You need to deploy a containerized application with high availability and the ability to scale based on traffic. Which service would you use?",
+        "options": [
+          "AWS EC2",
+          "Kubernetes",
+          "Docker Swarm",
+          "Azure App Service"
+        ],
+        "correctAnswer": "Kubernetes"
+      },
+      {
+        "id": 15,
+        "question": "Your web application is experiencing high traffic, and you want to distribute incoming requests across multiple servers to ensure availability and responsiveness. What solution would you implement?",
+        "options": [
+          "Load Balancer",
+          "CDN",
+          "WebSocket",
+          "API Gateway"
+        ],
+        "correctAnswer": "Load Balancer"
+      },
+      {
+        "id": 16,
+        "question": "Your microservices architecture requires a messaging system for asynchronous communication between services. The system must ensure reliable message delivery. Which tool would you choose?",
+        "options": [
+          "RabbitMQ",
+          "Apache Kafka",
+          "Redis",
+          "All of the above"
+        ],
+        "correctAnswer": "All of the above"
+      },
+      {
+        "id": 17,
+        "question": "To improve the deployment process, your team decides to automate builds, tests, and deployments. Which tool would you choose for setting up a CI/CD pipeline?",
+        "options": [
+          "Jenkins",
+          "CircleCI",
+          "GitHub Actions",
+          "All of the above"
+        ],
+        "correctAnswer": "All of the above"
+      },
+      {
+        "id": 18,
+        "question": "Your application needs to serve dynamic data to a frontend client. The client may need different subsets of the data based on user preferences. Which API type would you use?",
+        "options": [
+          "REST API",
+          "SOAP API",
+          "GraphQL",
+          "WebSocket"
+        ],
+        "correctAnswer": "GraphQL"
+      },
+      {
+        "id": 19,
+        "question": "Your web application experiences frequent access to static data, such as product details. To reduce database load and improve response times, you decide to implement caching. Which tool would you use?",
+        "options": [
+          "Memcached",
+          "Redis",
+          "Apache Ignite",
+          "All of the above"
+        ],
+        "correctAnswer": "All of the above"
+      },
+      {
+        "id": 20,
+        "question": "Your production application needs real-time performance monitoring and error tracking. You need a tool that provides actionable insights and alerts. Which tool would you use?",
+        "options": [
+          "New Relic",
+          "Datadog",
+          "Sentry",
+          "All of the above"
+        ],
+        "correctAnswer": "All of the above"
+      },
+      {
+        "id": 21,
+        "question": "You are blindfolded and 10 coins are placed in front of you on the table. You are told that there are 5 coins head up, and 5 coins tails up but not which ones are which. Can you make two piles of coins each with the same number of heads up? You can flip the coins any number of times.",
+        "options": [
+          "No",
+          "Cannot be determined",
+          "Yes"
+        ],
+        "correctAnswer": "Yes"
+      },
+      {
+        "id": 22,
+        "question": "You have got someone working for you for five days and a gold bar to pay him. You must give them a piece of gold at the end of every day. What are the fewest number of cuts to the bar of gold that will allow you to pay him 1/5th each day?",
+        "options": [
+          "2",
+          "3",
+          "5",
+          "10"
+        ],
+        "correctAnswer": "2"
+      },
+      {
+        "id": 23,
+        "question": "There are 5 pirates who must decide how to distribute 100 gold coins among them. The pirates have seniority levels, with the senior-most being A and the junior-most being E. What is the maximum number of coins that pirate A might get?",
+        "options": [
+          "98",
+          "99",
+          "110",
+          "112",
+          "Cannot be determined"
+        ],
+        "correctAnswer": "98"
+      },
+      {
+        "id": 24,
+        "question": "A Lady bought an item of Rs 100 from the Shopkeeper. She paid him through a 500 Rs Note. The shopkeeper got change for the note from another shopkeeper and paid Rs 400 to the Lady. Later, the second shopkeeper realized the note was fake and took 500 Rs back from the first shopkeeper. How much money did the first shopkeeper lose in the end?",
+        "options": [
+          "100",
+          "400",
+          "500",
+          "No Loss"
+        ],
+        "correctAnswer": "500"
+      },
+      {
+        "id": 25,
+        "question": "Two trains are on the same track and are coming toward each other. The speed of the first train is 50 km/h and the speed of the second train is 70 km/h. A bee starts flying between the trains when the distance between them is 100 km. The bee flies at 80 km/h. Calculate the total distance travelled by the bee.",
+        "options": [
+          "100 Km",
+          "66.67 Km",
+          "65 Km",
+          "77 Km"
+        ],
+        "correctAnswer": "66.67 Km"
+      },
+      {
+        "id": 26,
+        "question": "Which of the following concurrency control protocols ensures both conflict serializability and deadlock-freedom?",
+        "options": [
+          "Two-Phase Locking (2PL)",
+          "Timestamp-Ordering Protocol",
+          "Multiversion Concurrency Control (MVCC)",
+          "Strict Two-Phase Locking (S2PL)"
+        ],
+        "correctAnswer": "Timestamp-Ordering Protocol"
+      },
+      {
+        "id": 27,
+        "question": "Which of the following strategies does not reduce the cost of a relational database query?",
+        "options": [
+          "Using indexes on columns involved in WHERE clause conditions",
+          "Reducing the size of intermediate relations",
+          "Normalizing the database to higher normal forms",
+          "Pushing selections as early as possible in query trees"
+        ],
+        "correctAnswer": "Normalizing the database to higher normal forms"
+      },
+      {
+        "id": 28,
+        "question": "Which scheduling algorithm can cause starvation?",
+        "options": [
+          "First-Come-First-Serve (FCFS)",
+          "Shortest Job Next (SJN)",
+          "Round-Robin (RR)",
+          "Multilevel Queue Scheduling"
+        ],
+        "correctAnswer": "Shortest Job Next (SJN)"
+      },
+      {
+        "id": 29,
+        "question": "In a paged memory system with a 32-bit logical address, a page size of 4KB, and 4 levels of paging, how many bits are required to represent the page offset?",
+        "options": [
+          "10",
+          "12",
+          "20",
+          "22"
+        ],
+        "correctAnswer": "12"
+      },
+      {
+        "id": 30,
+        "question": "Which of the following routing algorithms can handle negative edge weights?",
+        "options": [
+          "Bellman-Ford",
+          "Dijkstra’s Algorithm",
+          "AODV",
+          "OSPF"
+        ],
+        "correctAnswer": "Bellman-Ford"
       }
+
     ]
   }
 };

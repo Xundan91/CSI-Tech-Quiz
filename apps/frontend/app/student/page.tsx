@@ -118,16 +118,16 @@ export default function StudentDashboard() {
     fetchProfileAndMarks();
   }, []);
 
-//  /all round show
-  // const getRoundStatus = (roundId: number) => {
-  //   if (completedRounds.includes(roundId)) {
-  //     return 'completed';
-  //   }
-  //   if (roundId === 1 || completedRounds.includes(roundId - 1)) {
-  //     return 'available';
-  //   }
-  //   return 'locked';
-  // };
+// //  /all round show
+  const getRoundStatus = (roundId: number) => {
+    if (completedRounds.includes(roundId)) {
+      return 'completed';
+    }
+    if (roundId === 1 || completedRounds.includes(roundId - 1)) {
+      return 'available';
+    }
+    return 'locked';
+  };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ///only 1 round
@@ -145,21 +145,21 @@ export default function StudentDashboard() {
 
   ///////only round 1 and 2 
 
-  const getRoundStatus = (roundId: number) => {
-    if (completedRounds.includes(roundId)) {
-      return 'completed';
-    }
+  // const getRoundStatus = (roundId: number) => {
+  //   if (completedRounds.includes(roundId)) {
+  //     return 'completed';
+  //   }
     
-    if (roundId === 1) {
-      return 'available';
-    }
+  //   if (roundId === 1) {
+  //     return 'available';
+  //   }
     
-    if (roundId === 2 && completedRounds.includes(1)) {
-      return 'available';
-    }
+  //   if (roundId === 2 && completedRounds.includes(1)) {
+  //     return 'available';
+  //   }
     
-    return 'locked';
-  };
+  //   return 'locked';
+  // };
 
 
 
@@ -316,7 +316,7 @@ export default function StudentDashboard() {
   const hasScore = scoreData && !scoreData.message && scoreData.correctAnswer !== undefined;
   
   // Set total questions based on round
-  const totalQuestions = round.id === 1 ? 35 : round.id === 2 ? 45 : 10;
+  const totalQuestions = round.id === 1 ? 35 : round.id === 2 ? 45 : 30;
   const maxScore = totalQuestions * 5; // Calculate max score based on total questions
   
   const correctAnswers = hasScore ? (scoreData.correctAnswer ?? 0) : 0;
@@ -326,7 +326,7 @@ export default function StudentDashboard() {
   const negativeScore = wrongAnswers * 2;    // -2 points for each wrong answer
   const totalScore = positiveScore - negativeScore;
 
-  const percentage = hasScore ? (totalScore / maxScore * 100) : 0;
+  const percentage = hasScore ? ((totalScore / maxScore) * 100) : 0;
 
   const timeTaken = hasScore && scoreData.timeTaken ? scoreData.timeTaken : null;
           return (

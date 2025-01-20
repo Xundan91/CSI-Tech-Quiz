@@ -21,21 +21,25 @@ const rankColors: Record<1 | 2 | 3, string> = {
 
 export default function AdminDashboard() {
   const [rankings, setRankings] = useState<Record<string, any[]>>({});
+  const [overallRankings, setOverallRankings] = useState<any[]>([]);
   const [selectedTab, setSelectedTab] = useState('APTITUDE');
 
   useEffect(() => {
-    const fetchRankings = async () => {
+    const fetchAllRankings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://csi-tech-quiz.onrender.com/api/user/rankings', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        // Fetch round-wise rankings
+        const roundResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/rankings', {
+          headers,
         });
-        const data = await response.json();
+        const roundData = await roundResponse.json();
         
-        // Group and sort the data by TestType, Score, and Time
-        const groupedData = data.reduce((acc: Record<string, any[]>, item: any) => {
+        // Group and sort the round data
+        const groupedData = roundData.reduce((acc: Record<string, any[]>, item: any) => {
           if (!acc[item.TestType]) {
             acc[item.TestType] = [];
           }
@@ -43,9 +47,9 @@ export default function AdminDashboard() {
           return acc;
         }, {});
 
-        // Sort each group by Score (descending) and Time (ascending)
+        // Sort each group
         Object.keys(groupedData).forEach(testType => {
-          groupedData[testType].sort((a:any, b:any) => {
+          groupedData[testType].sort((a: any, b: any) => {
             if (b.Score !== a.Score) {
               return b.Score - a.Score;
             }
@@ -54,17 +58,25 @@ export default function AdminDashboard() {
         });
 
         setRankings(groupedData);
+
+        // Fetch overall rankings
+        const overallResponse = await fetch('https://csi-tech-quiz.onrender.com/api/user/sumrankings', {
+          headers,
+        });
+        const overallData = await overallResponse.json();
+        setOverallRankings(overallData);
+
       } catch (error) {
         console.error('Error fetching rankings:', error);
       }
     };
 
-    fetchRankings();
+    fetchAllRankings();
   }, []);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
   };
 
@@ -82,6 +94,61 @@ export default function AdminDashboard() {
           </h1>
         </div>
 
+        {/* Overall Rankings Card */}
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Trophy className="mr-2" /> Overall Rankings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {overallRankings.map((student, index) => (
+                  <motion.div
+                    key={student.user.id}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 rounded-lg bg-card hover:bg-accent/50 transition-colors border"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className={`text-2xl font-bold min-w-[2rem] ${
+                          rankColors[(index + 1) as 1 | 2 | 3] || 'text-muted-foreground'
+                        }`}>
+                          #{index + 1}
+                        </div>
+                        <Avatar>
+                          <AvatarFallback>{student.user.name?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{student.user.name}</p>
+                          <p className="text-sm text-muted-foreground">{student.user.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold">
+                          {student.averagePercentage.toFixed(2)}%
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground justify-end">
+                          <Timer className="w-4 h-4 mr-1" />
+                          Total Time: {formatTime(student.totalTime)}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Round-wise Rankings Card */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -90,7 +157,7 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Trophy className="mr-2" /> Top Performers
+                <Trophy className="mr-2" /> Round Rankings
               </CardTitle>
             </CardHeader>
             <CardContent>
