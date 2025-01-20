@@ -130,26 +130,10 @@ export const Superadvancedsa = async (req: any, res: any) => {
   }
 };
 
-// export const Getmarksdata = async (req:any , res:any)=>{
-//   const userid = req.userid?.id;
-//   const usermarks = await prisma.testRound.findUnique({
-//     userid,
-
-
-//   })
-// export const getallmarkswithuser = async (req:any , res:any)=>{
-//   const {userId} = req.params;
-//   const testRound = await prisma.testRound.findMany{
-//     where :{
-//       userid : parseInt( userId, 10)
-//     }
-//   }
-// }
 
 
 export const getUserTestDetails = async (req:any, res:any) => {
   try {
-    console.log(req.user);
     const userId = req.user?.id;
     // Fetch the oldest test rounds for APTITUDE, DSA, and ADVANCEDSA
     const testRounds = await prisma.testRound.findMany({
@@ -238,3 +222,104 @@ export const getRankings = async (req: any, res: any) => {
 };
 
 
+
+
+
+
+export const getTopStudents = async (req: Request, res: Response) => {
+    try {
+        // Get all students who have completed both APTITUDE and DSA rounds
+        const studentsWithBothRounds = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                rounds: {
+                    where: {
+                        TestType: {
+                            in: [TestType.APTITUDE, TestType.DSA]
+                        }
+                    },
+                    orderBy: {
+                        roundDate: 'asc'
+                    },
+                    select: {
+                        TestType: true,
+                        percentage: true,
+                        TotalcorrectAnswerScore: true,
+                        Totaltime: true
+                    }
+                }
+            },
+            where: {
+                AND: [
+                    {
+                        rounds: {
+                            some: {
+                                TestType: TestType.APTITUDE
+                            }
+                        }
+                    },
+                    {
+                        rounds: {
+                            some: {
+                                TestType: TestType.DSA
+                            }
+                        }
+                    }
+                ]
+            }
+        });
+
+        // Process and calculate average scores
+        const processedStudents = studentsWithBothRounds
+            .map(student => {
+                const aptitudeRound = student.rounds.find(r => r.TestType === TestType.APTITUDE);
+                const dsaRound = student.rounds.find(r => r.TestType === TestType.DSA);
+
+                if (!aptitudeRound || !dsaRound) {
+                    return null;
+                }
+
+                return {
+                    id: student.id,
+                    name: student.name,
+                    email: student.email,
+                    aptitudeScore: aptitudeRound.percentage,
+                    dsaScore: dsaRound.percentage,
+                    averagePercentage: (aptitudeRound.percentage + dsaRound.percentage) / 2,
+                    rounds: {
+                        aptitude: {
+                            percentage: aptitudeRound.percentage,
+                            correctScore: aptitudeRound.TotalcorrectAnswerScore,
+                            timeSpent: aptitudeRound.Totaltime
+                        },
+                        dsa: {
+                            percentage: dsaRound.percentage,
+                            correctScore: dsaRound.TotalcorrectAnswerScore,
+                            timeSpent: dsaRound.Totaltime
+                        }
+                    }
+                };
+            })
+            .filter((student): student is NonNullable<typeof student> => student !== null)
+            // Sort by average percentage in descending order
+            .sort((a, b) => b.averagePercentage - a.averagePercentage)
+            // Take top 5
+            .slice(0, 5);
+
+        res.status(200).json({
+            success: true,
+            data: processedStudents,
+            message: "Top 5 students retrieved successfully"
+        });
+
+    } catch (error) {
+        console.error("Error fetching top students:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch top students",
+            message: error instanceof Error ? error.message : "Unknown error occurred"
+        });
+    }
+};

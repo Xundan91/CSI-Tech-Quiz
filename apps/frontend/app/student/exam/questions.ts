@@ -508,9 +508,9 @@ export const roundConfigs: Record<number, RoundConfig> = {
     }]
   },
   3: {
-    title: "Advanced Concepts",
+    title: "Surprise Round",
     description: "Challenge yourself with advanced programming concepts and problem-solving.",
-    timeLimit: 60,
+    timeLimit: 1,
     questions: [
       {
         id: 1,

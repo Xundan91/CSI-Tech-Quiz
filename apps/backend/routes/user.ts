@@ -2,13 +2,15 @@ import { Router } from "express";
 import { PrismaClient, User } from "@prisma/client";
 import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
-import { getCurrentUser,getUserTestDetails } from "../controllers/userController";
+import { getCurrentUser,getUserTestDetails,getTopStudents } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
 import { Aptitude, Superadvancedsa , Advancedsa ,getRankings} from "../controllers/userController";
 const prisma = new PrismaClient();
 const router = Router();
 
 router.get('/getusermarks',authenticate , getUserTestDetails)
+
+router.get('/gettop5' , getTopStudents);
 
 router.post('/aptitude',authenticate,Aptitude)
 router.post('/advancedsa',authenticate,Advancedsa)

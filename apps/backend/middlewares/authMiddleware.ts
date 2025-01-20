@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 // Define the secret key for signing JWT tokens
-const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
+const SECRET_KEY =  "your_secret_key";
 
 // Interface for the JWT payload
 interface TokenPayload {
