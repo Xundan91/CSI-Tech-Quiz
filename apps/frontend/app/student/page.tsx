@@ -136,9 +136,9 @@ export default function StudentDashboard() {
     if (completedRounds.includes(roundId)) {
       return 'completed';
     }
-    if (roundId === 1) {
-      return 'available';
-    }
+    // if (roundId === 1) {
+    //   return 'available';
+    // }
     return 'locked';
   };
 
