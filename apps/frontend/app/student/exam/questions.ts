@@ -233,7 +233,7 @@ export const roundConfigs: Record<number, RoundConfig> = {
   2: {
     title: "Data Structure and Algorithm",
     description: "Test your programming and technical knowledge.",
-    timeLimit: 30,
+    timeLimit: 31,
     questions: [ {
       "id": 1,
       "question": "What is the worst-case time complexity of Quicksort?",
