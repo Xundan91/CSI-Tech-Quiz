@@ -138,11 +138,9 @@ export default function Home() {
             </form>
 
             <div className="mt-4 text-sm text-muted-foreground text-center">
-              Demo credentials:
               <div className="mt-1">
-                Admin: admincsi@example.com / admincsi
+                
                 <br />
-                Student: usercsi@example.com / usercsi
               </div>
             </div>
           </CardContent>
