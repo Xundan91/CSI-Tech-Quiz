@@ -27,7 +27,7 @@ export default function AdminDashboard() {
     const fetchRankings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://13.200.3.175/api/user/rankings', {
+        const response = await fetch('https://csi-tech-quiz.onrender.com/api/user/rankings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -74,7 +74,7 @@ export default function StudentDashboard() {
         const token = localStorage.getItem('token');
         
         // Fetch profile
-        const profileResponse = await axios.get('https://13.200.3.175/api/user/profile', {
+        const profileResponse = await axios.get('https://csi-tech-quiz.onrender.com/api/user/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -88,7 +88,7 @@ export default function StudentDashboard() {
         });
 
         // Fetch marks
-        const marksResponse = await axios.get<TestScore[]>('https://13.200.3.175/api/user/getusermarks', {
+        const marksResponse = await axios.get<TestScore[]>('https://csi-tech-quiz.onrender.com/api/user/getusermarks', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
