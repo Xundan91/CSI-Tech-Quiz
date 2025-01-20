@@ -4,7 +4,7 @@ import { hashPassword, comparePassword, generateToken } from "../utils/auth";
 
 import { getCurrentUser,getUserTestDetails,getTopStudents } from "../controllers/userController";
 import { authenticate } from "../middlewares/authMiddleware";
-import { Aptitude, Superadvancedsa , Advancedsa ,getRankings} from "../controllers/userController";
+import { Aptitude, Superadvancedsa , Advancedsa ,getRankings,SumgetRankings} from "../controllers/userController";
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -20,6 +20,7 @@ router.post('/superadvancedsa',authenticate,Superadvancedsa)
 router.get("/profile",authenticate, getCurrentUser);
 
 router.get('/rankings',authenticate, getRankings);
+router.get('/sumrankings', SumgetRankings);
 
 interface UserInput {
   name: string;
