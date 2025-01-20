@@ -119,15 +119,15 @@ export default function StudentDashboard() {
   }, []);
 
 // //  /all round show
-  const getRoundStatus = (roundId: number) => {
-    if (completedRounds.includes(roundId)) {
-      return 'completed';
-    }
-    if (roundId === 1 || completedRounds.includes(roundId - 1)) {
-      return 'available';
-    }
-    return 'locked';
-  };
+  // const getRoundStatus = (roundId: number) => {
+  //   if (completedRounds.includes(roundId)) {
+  //     return 'completed';
+  //   }
+  //   if (roundId === 1 || completedRounds.includes(roundId - 1)) {
+  //     return 'available';
+  //   }
+  //   return 'locked';
+  // };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ///only 1 round
@@ -145,21 +145,21 @@ export default function StudentDashboard() {
 
   ///////only round 1 and 2 
 
-  // const getRoundStatus = (roundId: number) => {
-  //   if (completedRounds.includes(roundId)) {
-  //     return 'completed';
-  //   }
+  const getRoundStatus = (roundId: number) => {
+    if (completedRounds.includes(roundId)) {
+      return 'completed';
+    }
     
-  //   if (roundId === 1) {
-  //     return 'available';
-  //   }
+    if (roundId === 1) {
+      return 'available';
+    }
     
-  //   if (roundId === 2 && completedRounds.includes(1)) {
-  //     return 'available';
-  //   }
+    if (roundId === 2 && completedRounds.includes(1)) {
+      return 'available';
+    }
     
-  //   return 'locked';
-  // };
+    return 'locked';
+  };
 
 
 
