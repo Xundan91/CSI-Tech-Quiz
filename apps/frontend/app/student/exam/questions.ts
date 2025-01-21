@@ -523,7 +523,7 @@ export const roundConfigs: Record<number, RoundConfig> = {
           "size=inputList[i]",
           "sum+=inputList[i];"
         ],
-        correctAnswer: "Threads share memory, processes don't",
+        correctAnswer: "inputList[i]=sum",
         image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question1.png"
       },
       {
@@ -578,9 +578,10 @@ Find error in the following code `,
           "for (i = 0; i < len; i++)  ",
           "if (arr[i] > start || arr[i] < end)",
           "Both A and B",
-          "if (flag == -1)"
+          "if (flag == -1)",
+          "Both A and D"
         ],
-        correctAnswer: "if (arr[i] > start || arr[i] < end)",
+        correctAnswer: "Both A and D",
         image: "https://csi-bucket-0001.s3.ap-south-1.amazonaws.com/question3.png"
       },
       {
