@@ -390,7 +390,8 @@ export const SumgetRankings = async (req: any, res: any) => {
         const round3Percentage = (round3Score /( 30*5)) * 100;
 
         // Calculate the average percentage across the 3 rounds
-        const averagePercentage = (round1Percentage + round2Percentage + round3Percentage)/3;
+        const averagePercentage = ((round1Percentage + round2Percentage)/2)+(round3Percentage/2);
+
 
         // Get total time and divide by 3 to get average time per round
         const totalTime = scores.totalTime / 3;
