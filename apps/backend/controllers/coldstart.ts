@@ -1,3 +1,6 @@
+console.log("hello");
+
+
 // [
 //     {"name": "Amrit Dey", "email": "deyamrit959@gmail.com", "password": "23BCS12543"},
 //     {"name": "Charu Singla", "email": "charusingla38@gmail.com", "password": "23BCS12553"},

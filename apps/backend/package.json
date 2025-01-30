@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
-    "dev": "ts-node index.ts"
+    "dev": "ts-node index.ts",
+    "commit": "git add . && git commit -m \"${msg}\" && git push"
   },
   "keywords": [],
   "author": "",
