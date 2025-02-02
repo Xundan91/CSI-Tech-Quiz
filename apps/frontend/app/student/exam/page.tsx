@@ -66,7 +66,6 @@ export default function ExamPage() {
   const [userId, setUserId] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Fetch user profile on component mount
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
