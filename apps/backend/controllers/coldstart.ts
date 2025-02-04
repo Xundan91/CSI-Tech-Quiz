@@ -1,5 +1,16 @@
-console.log("hello");
 
+const pingServer = () => {
+    const API_URL = 'http://localhost:3000/api/health'; 
+    setInterval(async () => {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            console.log('Server pinged:', data);
+        } catch (error:any) {
+            console.error('Error pinging server:', error.message);
+        }
+    }, 10000);
+};
 
 // [
 //     {"name": "Amrit Dey", "email": "deyamrit959@gmail.com", "password": "23BCS12543"},

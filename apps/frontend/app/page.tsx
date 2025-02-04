@@ -132,7 +132,7 @@ export default function Home() {
                   required
                 />
               </div>
-              <LoadingButton type="submit" className="w-full" loading={isLoading}>
+              <LoadingButton type="submit" className="w-full" loading={!isLoading}>
                 <LockKeyhole className="mr-2 h-4 w-4" /> Login
               </LoadingButton>
             </form>
