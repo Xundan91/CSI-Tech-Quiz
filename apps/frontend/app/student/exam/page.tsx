@@ -150,6 +150,7 @@ export default function ExamPage() {
       };
     });
   };
+  
 
   const handleOptionClick = (questionId: number, option: string) => {
     handleAnswer(questionId, option);
