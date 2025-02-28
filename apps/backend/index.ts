@@ -18,7 +18,7 @@ const allowedOrigins = [
   'https://techo-pedia-csi.vercel.app',
   'https://csi-tech-quiz.onrender.com',
   'https://quiz.xundan.in/'
-  'https://13.200.3.175'
+  
 ];
 
 app.use(cors({
