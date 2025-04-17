@@ -270,7 +270,7 @@ export default function ExamPage() {
                   <h2 className="text-2xl font-bold mb-2">Thank You for Participating!</h2>
                   <div className="flex items-center justify-center gap-2 mb-4">
                     <PartyPopper className="w-5 h-5 text-primary" />
-                    <span className="text-xl font-semibold">CSI Event 2024</span>
+                    <span className="text-xl font-semibold">Quiz 2024</span>
                     <PartyPopper className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-lg mb-6">
