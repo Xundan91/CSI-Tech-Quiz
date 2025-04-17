@@ -106,7 +106,7 @@ export default function Home() {
             >
               <UserCircle2 size={50} className="text-primary mb-2" />
             </motion.div>
-            <CardTitle className="text-2xl">Techo-Pedia Event</CardTitle>
+            <CardTitle className="text-2xl">Quiz Application</CardTitle>
             <CardDescription>Enter your credentials to login</CardDescription>
           </CardHeader>
           <CardContent>

@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Techo-Pedia Csi Quiz Event',
+  title: 'Quiz Competition',
   description: 'Growth and New Learning',
 };
 
